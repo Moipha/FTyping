@@ -6,6 +6,9 @@ import router from './router'
 import { Quasar } from 'quasar'
 import quasarUserOptions from './options/quasar-user-options'
 
+import 'quasar/dist/quasar.css'
+import '@/assets/global.scss'
+
 const app = createApp(App)
 
 app.use(Quasar, quasarUserOptions)
