@@ -1,9 +1,19 @@
-*{
+@import './animation.scss';
+
+* {
     margin: 0;
     padding: 0;
 }
 
-body{
+body {
     background-color: #282c34;
     color: whitesmoke;
+}
+
+.hide {
+    display: none !important;
+}
+
+.waiting {
+    animation: shining 1s infinite;
 }

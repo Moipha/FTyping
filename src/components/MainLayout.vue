@@ -1,7 +1,7 @@
 <template>
     <div class="q-pa-md">
         <Header></Header>
-        <div class="container q-pa-md">
+        <div class="q-pa-md">
             <RouterView></RouterView>
         </div>
     </div>
@@ -11,9 +11,4 @@
 import Header from './Header.vue'
 </script>
 
-<style lang="scss" scoped>
-.container {
-    border: 1px solid;
-}
-
-</style>
+<style lang="scss" scoped></style>
