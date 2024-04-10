@@ -17,9 +17,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import useCaret from '@/hooks/useCaret'
 import useTyping from '@/hooks/useTyping'
+import { type Block } from '@/types'
 
 // 词组
 let words = ref([
@@ -43,9 +44,12 @@ let words = ref([
   { cn: '测试', en: 'ceshi' },
 ])
 
-let enWords = ref(words.value.map(w => w.en))
+// 拼音映射
+let enWords = ref<Block[]>(words.value.map(({ cn, ...rest }) => rest))
 
-// 当前caret索引，格式为 [block索引, 字母索引]
+// 当前已输入
+
+// 当前caret索引，格式为 [block索引, code索引]
 let curIndex = ref([0, 0])
 
 // 监听索引变化
@@ -57,12 +61,19 @@ watch(curIndex, () => {
 let caret = ref<HTMLElement | null>(null)
 
 // 定位caret与样式修改
-let { setBlockRef, handleTyping } = useCaret(caret, curIndex)
+let { setBlockRef, handleTyping, blockRefs } = useCaret(caret, curIndex)
 
 // 键盘输入与修改索引
-let { startTyping, endTyping, typing } = useTyping(caret, curIndex, enWords, words)
+let { startTyping, endTyping, typing } = useTyping(caret, curIndex, enWords, words, blockRefs)
 
+/* 生命周期 */
+onMounted(() => {
+  window.addEventListener('resize', handleTyping)
+})
 
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleTyping)
+})
 
 </script>
 

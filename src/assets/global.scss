@@ -1,4 +1,5 @@
 @import './animation.scss';
+@import './variables.scss';
 
 * {
     margin: 0;
@@ -16,4 +17,18 @@ body {
 
 .waiting {
     animation: shining 1s infinite;
+}
+
+.wrong {
+    color: $negative;
+    opacity: 1 !important;
+}
+
+.correct {
+    color: $positive;
+    opacity: 1 !important;
+}
+
+.skip {
+    color: $negative;
 }

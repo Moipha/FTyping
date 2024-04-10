@@ -1,4 +1,4 @@
-import { onMounted, ref, type Ref } from 'vue';
+import { onMounted, ref, type Ref } from 'vue'
 
 export default (caret: Ref, curIndex: Ref) => {
     // 设置block动态ref
@@ -9,64 +9,62 @@ export default (caret: Ref, curIndex: Ref) => {
         }
     }
 
-    // 定位caret
-    const positionCaret = (n: number, block: HTMLElement | null) => {
-        const caretElement = caret.value as HTMLElement | null
-        if (caretElement && block) {
-            // const codeElements = block.querySelectorAll('.en-word code')
-            const en = block.children[1] as HTMLElement
-            const codeElements = en.children
-            if (codeElements.length > n) {
-                // 定位浮标至对应的字母前
-                const targetCode = codeElements[n] as HTMLElement
-                const caretTop = targetCode.offsetTop + targetCode.offsetHeight / 2 - caretElement.offsetHeight / 2
-                const caretLeft = targetCode.offsetLeft
-
-                // 设置caret的位置
-                if (caretElement) {
-                    caretElement.style.top = caretTop + 'px'
-                    caretElement.style.left = caretLeft + 'px'
-                }
-            } else if (codeElements.length == n) {
-                // 如果该block中的全部字母都定位过了，将浮标定位至最后一个字母的右边
-                
-                const targetCode = codeElements[n - 1] as HTMLElement
-                const caretTop = targetCode.offsetTop + targetCode.offsetHeight / 2 - caretElement.offsetHeight / 2
-                const caretLeft = targetCode.offsetLeft + targetCode.offsetWidth
-                // 设置caret的位置
-                if (caretElement) {
-                    caretElement.style.top = caretTop + 'px'
-                    caretElement.style.left = caretLeft + 'px'
-                }
-            } else {
-                console.error(`Block does not have ${n + 1} code elements.`)
-            }
-        } else {
-            console.error('Caret or block element is not defined.')
-        }
-    }
-
-    // 进行输入，重新定位
+    // 处理键盘事件
     const handleTyping = () => {
         // 获取当前block的ref
-        let block = blockRefs.value[curIndex.value[0]]
-        // 定位caret
-        if (block) {
-            positionCaret(curIndex.value[1], block)
-            console.log(blockRefs)
-
-        } else {
-            console.error('Block element is not defined.')
+        const block = blockRefs.value[curIndex.value[0]]
+        // 重新定位caret
+        if (!block) {
+            console.error('Block元素未定义')
+            return
         }
+        positionCaret(curIndex.value[1], block)
+    }
+
+    // 根据传入code索引和block元素定位caret
+    const positionCaret = (n: number, blockElement: HTMLElement | null) => {
+        // 检查参数是否为null
+        if (!blockElement) {
+            console.error('Block元素不存在')
+            return
+        }
+        // 获取子元素en-word和cn-word
+        const en = blockElement.children[1] as HTMLElement
+        // 获取code元素集合
+        const codeElements = en.children
+        // 如果n大于元素总数则无法定位
+        if (codeElements.length < n) {
+            console.error(`Block中不足${n}个code`)
+            return
+        }
+        // 定位至对应字母左方。如果已在最后一个字母左方，定位至其右方
+        const positionTargetCode = codeElements[n] as HTMLElement || codeElements[n - 1] as HTMLElement
+        n != codeElements.length
+        moveCaret(positionTargetCode, n != codeElements.length)
+    }
+
+    // 根据传入目标确定caret位置
+    function moveCaret(target: HTMLElement, onLeft: boolean) {
+        const caretElement = caret.value as HTMLElement | null
+        // 设置caret的位置
+        if (!caretElement) {
+            console.error('CaretElement元素不存在')
+            return
+        }
+        const caretTop = target.offsetTop + target.offsetHeight / 2 - caretElement.offsetHeight / 2
+        // 定位至右侧计算中需考虑自身宽度
+        const caretLeft = target.offsetLeft + (onLeft ? 0 : target.offsetWidth)
+        caretElement.style.top = `${caretTop}px`
+        caretElement.style.left = `${caretLeft}px`
     }
 
 
     /* 生命周期 */
 
-    // 挂载
+    // 挂载时定位caret
     onMounted(() => {
         handleTyping()
     })
 
-    return { setBlockRef, handleTyping }
+    return { setBlockRef, handleTyping, blockRefs }
 }
