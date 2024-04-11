@@ -43,7 +43,7 @@ export default (caret: Ref, curIndex: Ref) => {
         moveCaret(positionTargetCode, n != codeElements.length)
     }
 
-    // 根据传入目标确定caret位置
+    // 根据传入目标和左右方位确定caret位置
     function moveCaret(target: HTMLElement, onLeft: boolean) {
         const caretElement = caret.value as HTMLElement | null
         // 设置caret的位置

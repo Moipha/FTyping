@@ -97,13 +97,14 @@ onBeforeUnmount(() => {
 
   // 词组
   .word-block {
-
+    
     // 下方拼音
     .en-word {
       margin-top: -3px;
 
       // 单个字母
       code {
+        transition: 0.2s;
         font-family: 'Consolas';
         margin: 0 0.5px;
         font-size: 23px;
@@ -113,6 +114,7 @@ onBeforeUnmount(() => {
 
     // 上方汉字
     .cn-word {
+      transition: 0.2s;
       font-size: medium;
       font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
     }
