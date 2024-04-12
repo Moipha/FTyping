@@ -1,16 +1,14 @@
-import type { Block } from "@/types"
-import { nextTick, ref, type Ref } from "vue"
+import { nextTick, type Ref } from "vue"
+import {useTypingStore} from '@/stores/useTypingStore'
+import { storeToRefs } from "pinia"
 
 export default function (
-    caret: Ref<HTMLElement | null>,
     curIndex: Ref<[number, number]>,
-    words: Ref<{ cn: string, en: string }[]>,
-    blockRefs: Ref<HTMLElement[]>,
-    handleEnd: Function, startTime: Ref<number | null>
+    handleEnd: Function
 ) {
 
-    // 拼音映射，包括原字符串、当前输入字符串、输入是否正确三个属性的对象集合
-    let enWords = words.value.map(({ cn, ...rest }) => rest) as Block[]
+    // 获取store中的数据
+    const { words, blockRefs, caret, enWords, startTime} = storeToRefs(useTypingStore())
 
     // 开始输入
     function startTyping() {
@@ -38,16 +36,16 @@ export default function (
             }
 
             // 处理字母按键输入
-            if (enWords[curIndex.value[0]].typing) {
-                enWords[curIndex.value[0]].typing += e.key
+            if (enWords.value[curIndex.value[0]].typing) {
+                enWords.value[curIndex.value[0]].typing += e.key
             } else {
-                enWords[curIndex.value[0]].typing = e.key
+                enWords.value[curIndex.value[0]].typing = e.key
             }
 
             // 判断输入是否正确
             if (curIndex.value[1] != codeElements.length) {
                 const target = codeElements[curIndex.value[1]] as HTMLElement
-                target.classList.add(e.key == enWords[curIndex.value[0]].en[curIndex.value[1]] ? 'correct' : 'wrong') // 根据输入是否正确添加样式
+                target.classList.add(e.key == enWords.value[curIndex.value[0]].en[curIndex.value[1]] ? 'correct' : 'wrong') // 根据输入是否正确添加样式
                 target.classList.remove('skip')
             }
 
@@ -64,7 +62,7 @@ export default function (
                             curIndex.value[1]++
                         })
                     } else {
-                        handleEnd(enWords)
+                        handleEnd(enWords.value)
                     }
                 }
             }
@@ -78,16 +76,16 @@ export default function (
                     const targets = [...codeElements].slice(curIndex.value[1], codeElements.length)
                     targets.forEach(code => code.classList.add('skip')) // 跳过未输入的字符
                     // 记录输入是否正确
-                    enWords[curIndex.value[0]].isCorrect = enWords[curIndex.value[0]].typing == enWords[curIndex.value[0]].en
+                    enWords.value[curIndex.value[0]].isCorrect = enWords.value[curIndex.value[0]].typing == enWords.value[curIndex.value[0]].en
                     // 根据输入正确性添加样式
-                    cnElement.classList.toggle('wrong', !enWords[curIndex.value[0]].isCorrect)
-                    cnElement.classList.toggle('correct', enWords[curIndex.value[0]].isCorrect)
+                    cnElement.classList.toggle('wrong', !enWords.value[curIndex.value[0]].isCorrect)
+                    cnElement.classList.toggle('correct', enWords.value[curIndex.value[0]].isCorrect)
 
                     curIndex.value = [curIndex.value[0] + 1, 0] // 更新索引
                 } else {
                     // 在最后一个block中按下空格，记录该block正误后结束
-                    enWords[curIndex.value[0]].isCorrect = enWords[curIndex.value[0]].typing == enWords[curIndex.value[0]].en
-                    handleEnd(enWords)
+                    enWords.value[curIndex.value[0]].isCorrect = enWords.value[curIndex.value[0]].typing == enWords.value[curIndex.value[0]].en
+                    handleEnd(enWords.value)
                 }
             }
         } else if (e.code === 'Backspace') {
@@ -105,7 +103,7 @@ export default function (
 
                 // 移除上一个block中汉字的样式和正误判断
                 lastBlockCn.classList.remove('wrong', 'correct')
-                enWords[curIndex.value[0] - 1].isCorrect = undefined
+                enWords.value[curIndex.value[0] - 1].isCorrect = undefined
 
                 // 检查是否有跳过，如有，退至跳转前的位置
                 const haveSkip = lastBlockArr.filter(code => code.classList.contains('skip')).length > 0
@@ -137,12 +135,12 @@ export default function (
                 // code索引不为0
 
                 // 更新输入，删除输入字符串的最后一位
-                const currentTyping = enWords[curIndex.value[0]].typing
+                const currentTyping = enWords.value[curIndex.value[0]].typing
                 if (currentTyping) {
-                    enWords[curIndex.value[0]].typing = currentTyping.slice(0, -1)
+                    enWords.value[curIndex.value[0]].typing = currentTyping.slice(0, -1)
                 }
                 // 如果存在多余输入，删除页面中对应block的一个字符
-                if (curIndex.value[1] > enWords[curIndex.value[0]].en.length) {
+                if (curIndex.value[1] > enWords.value[curIndex.value[0]].en.length) {
                     words.value[curIndex.value[0]].en = words.value[curIndex.value[0]].en.slice(0, -1)
                     nextTick(() => curIndex.value[1]--)
                 } else {

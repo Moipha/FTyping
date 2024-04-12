@@ -2,8 +2,8 @@
   <div class="items-center column">
     <div class="q-my-xl"></div>
     <div v-show="!showResult" class="items-center column">
-      <div @focus="startTyping" @blur="endTyping" @keydown.prevent="typing" @click="handleTyping" ref="inputContainer"
-        tabindex="0" autofocus class="row words-container">
+      <div ref="blocksContainer" @focus="startTyping" @blur="endTyping" @keydown="typing" @click="handleTyping" tabindex="0"
+        autofocus class="row words-container">
         <div ref="caret" class="caret"></div>
         <div :ref="(el) => setBlockRef(el as HTMLElement, index)" v-for="(word, index) in words" :key="index"
           class="column items-center word-block">
@@ -13,7 +13,7 @@
           </div>
         </div>
       </div>
-      <q-btn class="re-btn" padding="xl" icon="refresh" size="lg" unelevated />
+      <q-btn @keydown.space="restart" @click="restart" class="re-btn" padding="xl" icon="refresh" size="lg" unelevated />
     </div>
     <Transition name="result">
       <div v-show="showResult" class="result items-center column">
@@ -31,7 +31,7 @@
             <div class="result-value correct">{{ typingResult.during }}</div>
           </div>
         </div>
-        <q-btn @click="restart" class="re-btn" padding="xl" icon="refresh" size="lg" unelevated />
+        <q-btn @keydown.space="restart" @click="restart" class="re-btn" padding="xl" icon="refresh" size="lg" unelevated />
       </div>
     </Transition>
   </div>
@@ -42,46 +42,38 @@
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import useCaret from '@/hooks/useCaret'
 import useTyping from '@/hooks/useTyping'
-import useProcess from '@/hooks/useProcess';
-import type { TypingResult } from '@/types';
+import useProcess from '@/hooks/useProcess'
+import { useTypingStore } from '@/stores/useTypingStore'
+import type { TypingResult } from '@/types'
+import { storeToRefs } from 'pinia'
+
+
+/* store中的数据 */
+const { words, caret, blocksContainer } = storeToRefs(useTypingStore())
+const { generateWords, setBlockRef } = useTypingStore()
+
+// 生成随机词组
+generateWords(5)
 
 
 /* 数据 */
-let words = ref([  // 词组
-  { cn: '测试', en: 'ceshi' },
-  { cn: '测试', en: 'ceshi' },
-  { cn: '测试', en: 'yruiwer' }
-])
-let showResult = ref(false)   // 结果是否显示
-let typingResult = ref<TypingResult>({ wpm: '', correctness: '', during: '' })  // 结果显示数据
-let curIndex = ref<[number, number]>([0, 0])  // 当前caret索引，格式为 [block索引, code索引]
-let startTime = ref<number | null>(null)      // 计时：开始时间
+const showResult = ref(false)   // 结果是否显示
+const typingResult = ref<TypingResult>({ wpm: '', correctness: '', during: '' })  // 结果显示数据
+const curIndex = ref<[number, number]>([0, 0])  // 当前caret索引，格式为 [block索引, code索引]
 
 // 监听索引变化，变化后定位浮标
 watch(curIndex, () => {
   handleTyping()
 }, { deep: true })
 
-
-/* 节点 */
-let caret = ref<HTMLElement | null>(null)   // caret元素节点
-const blockRefs = ref<HTMLElement[]>([])    // block元素ref节点集合
-
-// 设置block动态ref集合
-const setBlockRef = (el: HTMLElement, index: number) => {
-  if (el) {
-    blockRefs.value[index] = el
-  }
-}
-
-
 /* 自定义hook */
-let { handleTyping } = useCaret(caret, curIndex, blockRefs)   // 根据索引定位caret
-let { handleEnd, restart } = useProcess(startTime, words, typingResult, curIndex, showResult)   // 处理开始和结束流程操作
-let { startTyping, endTyping, typing } = useTyping(caret, curIndex, words, blockRefs, handleEnd, startTime)   // 根据键盘输入修改索引与样式
+const { handleTyping } = useCaret(curIndex)   // 根据索引定位caret
+const { handleEnd, restart } = useProcess(typingResult, curIndex, showResult)   // 处理开始和结束流程操作
+const { startTyping, endTyping, typing } = useTyping(curIndex, handleEnd)   // 根据键盘输入修改索引与样式
 
 
 /* 生命周期 */
+
 onMounted(() => {
   // 监听屏幕改动，实时调整浮标位置
   window.addEventListener('resize', handleTyping)
@@ -130,7 +122,7 @@ onBeforeUnmount(() => {
 
     // 上方汉字
     .cn-word {
-      transition: 0.2s;
+      transition: 0.1s;
       font-size: medium;
       font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
     }

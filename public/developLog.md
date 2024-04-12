@@ -6,6 +6,7 @@
 2. 添加 `autofocus`属性可以在挂载时自动聚焦
 3. 通过 `outline: none`来去除默认的聚焦样式
 
+# 2024/4/10
 
 ## 关于classList.toggle()
 
@@ -18,3 +19,12 @@
 
   - 第一个参数传入类名
   - 第二个参数传入布尔值，该布尔值为真则会添加类名，否则删除类名
+
+# 2024/4/12
+
+## 关于ref
+
+- 在使用 `pinia`存储ref节点数据时，需要在ref所在的组件中获取一下，否则ref数据仍为初始值
+- `const { words, caret, blocksContainer } = storeToRefs(useTypingStore())`
+
+> 这里我引入 `blocksContainer`之后该ref才有了数据
