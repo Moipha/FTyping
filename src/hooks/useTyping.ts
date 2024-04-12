@@ -1,6 +1,17 @@
-import { nextTick, type Ref } from "vue"
+import type { Block } from "@/types"
+import { nextTick, ref, type Ref } from "vue"
 
-export default function (caret: Ref, curIndex: Ref, enWords: Ref, words: Ref, blockRefs: Ref) {
+export default function (
+    caret: Ref<HTMLElement | null>,
+    curIndex: Ref<[number, number]>,
+    words: Ref<{ cn: string, en: string }[]>,
+    blockRefs: Ref<HTMLElement[]>,
+    handleEnd: Function, startTime: Ref<number | null>
+) {
+
+    // 拼音映射，包括原字符串、当前输入字符串、输入是否正确三个属性的对象集合
+    let enWords = words.value.map(({ cn, ...rest }) => rest) as Block[]
+
     // 开始输入
     function startTyping() {
         caret.value?.classList.remove('hide') // 移除隐藏样式
@@ -21,17 +32,22 @@ export default function (caret: Ref, curIndex: Ref, enWords: Ref, words: Ref, bl
         }
 
         if (e.code.startsWith('Key')) {
-            // 处理按键输入
-            if (enWords.value[curIndex.value[0]].typing) {
-                enWords.value[curIndex.value[0]].typing += e.key
+            // 第一次输入时开始计时
+            if (!startTime.value) {
+                startTime.value = Date.now()
+            }
+
+            // 处理字母按键输入
+            if (enWords[curIndex.value[0]].typing) {
+                enWords[curIndex.value[0]].typing += e.key
             } else {
-                enWords.value[curIndex.value[0]].typing = e.key
+                enWords[curIndex.value[0]].typing = e.key
             }
 
             // 判断输入是否正确
             if (curIndex.value[1] != codeElements.length) {
                 const target = codeElements[curIndex.value[1]] as HTMLElement
-                target.classList.add(e.key == enWords.value[curIndex.value[0]].en[curIndex.value[1]] ? 'correct' : 'wrong') // 根据输入是否正确添加样式
+                target.classList.add(e.key == enWords[curIndex.value[0]].en[curIndex.value[1]] ? 'correct' : 'wrong') // 根据输入是否正确添加样式
                 target.classList.remove('skip')
             }
 
@@ -48,7 +64,7 @@ export default function (caret: Ref, curIndex: Ref, enWords: Ref, words: Ref, bl
                             curIndex.value[1]++
                         })
                     } else {
-                        handleEnd()
+                        handleEnd(enWords)
                     }
                 }
             }
@@ -62,16 +78,16 @@ export default function (caret: Ref, curIndex: Ref, enWords: Ref, words: Ref, bl
                     const targets = [...codeElements].slice(curIndex.value[1], codeElements.length)
                     targets.forEach(code => code.classList.add('skip')) // 跳过未输入的字符
                     // 记录输入是否正确
-                    enWords.value[curIndex.value[0]].isCorrect = enWords.value[curIndex.value[0]].typing == enWords.value[curIndex.value[0]].en
+                    enWords[curIndex.value[0]].isCorrect = enWords[curIndex.value[0]].typing == enWords[curIndex.value[0]].en
                     // 根据输入正确性添加样式
-                    cnElement.classList.toggle('wrong', !enWords.value[curIndex.value[0]].isCorrect)
-                    cnElement.classList.toggle('correct', enWords.value[curIndex.value[0]].isCorrect) 
+                    cnElement.classList.toggle('wrong', !enWords[curIndex.value[0]].isCorrect)
+                    cnElement.classList.toggle('correct', enWords[curIndex.value[0]].isCorrect)
 
                     curIndex.value = [curIndex.value[0] + 1, 0] // 更新索引
                 } else {
                     // 在最后一个block中按下空格，记录该block正误后结束
-                    enWords.value[curIndex.value[0]].isCorrect = enWords.value[curIndex.value[0]].typing == enWords.value[curIndex.value[0]].en
-                    handleEnd()
+                    enWords[curIndex.value[0]].isCorrect = enWords[curIndex.value[0]].typing == enWords[curIndex.value[0]].en
+                    handleEnd(enWords)
                 }
             }
         } else if (e.code === 'Backspace') {
@@ -89,7 +105,7 @@ export default function (caret: Ref, curIndex: Ref, enWords: Ref, words: Ref, bl
 
                 // 移除上一个block中汉字的样式和正误判断
                 lastBlockCn.classList.remove('wrong', 'correct')
-                enWords.value[curIndex.value[0] - 1].isCorrect = null
+                enWords[curIndex.value[0] - 1].isCorrect = undefined
 
                 // 检查是否有跳过，如有，退至跳转前的位置
                 const haveSkip = lastBlockArr.filter(code => code.classList.contains('skip')).length > 0
@@ -108,7 +124,11 @@ export default function (caret: Ref, curIndex: Ref, enWords: Ref, words: Ref, bl
                     // 移除未输入字符的样式
                     targets.forEach(code => code.classList.remove('skip'))
                     // 修改索引至跳转前位置
-                    curIndex.value = [curIndex.value[0] - 1, startIndex]
+                    if (startIndex) {
+                        curIndex.value = [curIndex.value[0] - 1, startIndex]
+                    } else {
+                        console.error('索引元素不存在')
+                    }
                 } else {
                     // 无跳过则返回上一个block的末尾
                     curIndex.value = [curIndex.value[0] - 1, words.value[curIndex.value[0] - 1].en.length]
@@ -117,11 +137,12 @@ export default function (caret: Ref, curIndex: Ref, enWords: Ref, words: Ref, bl
                 // code索引不为0
 
                 // 更新输入，删除输入字符串的最后一位
-                if (enWords.value[curIndex.value[0]].typing) {
-                    enWords.value[curIndex.value[0]].typing = enWords.value[curIndex.value[0]].typing.slice(0, -1)
+                const currentTyping = enWords[curIndex.value[0]].typing
+                if (currentTyping) {
+                    enWords[curIndex.value[0]].typing = currentTyping.slice(0, -1)
                 }
                 // 如果存在多余输入，删除页面中对应block的一个字符
-                if (curIndex.value[1] > enWords.value[curIndex.value[0]].en.length) {
+                if (curIndex.value[1] > enWords[curIndex.value[0]].en.length) {
                     words.value[curIndex.value[0]].en = words.value[curIndex.value[0]].en.slice(0, -1)
                     nextTick(() => curIndex.value[1]--)
                 } else {
@@ -149,11 +170,5 @@ export default function (caret: Ref, curIndex: Ref, enWords: Ref, words: Ref, bl
         return { cn, codeElements }
     }
 
-    // 输入完成
-    function handleEnd() {
-        console.log('结束')
-        curIndex.value = [0, 0]
-    }
-
-    return { startTyping, endTyping, typing }
+    return { startTyping, endTyping, typing, startTime }
 }

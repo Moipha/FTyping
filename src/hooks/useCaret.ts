@@ -1,14 +1,10 @@
-import { onMounted, ref, type Ref } from 'vue'
+import { onMounted, type Ref } from 'vue'
 
-export default (caret: Ref, curIndex: Ref) => {
-    // 设置block动态ref
-    const blockRefs = ref<HTMLElement[]>([])
-    const setBlockRef = (el: HTMLElement, index: number) => {
-        if (el) {
-            blockRefs.value[index] = el
-        }
-    }
-
+export default function (
+    caret: Ref<HTMLElement | null>,
+    curIndex: Ref<[number, number]>,
+    blockRefs: Ref<HTMLElement[]>
+) {
     // 处理键盘事件
     const handleTyping = () => {
         // 获取当前block的ref
@@ -66,5 +62,5 @@ export default (caret: Ref, curIndex: Ref) => {
         handleTyping()
     })
 
-    return { setBlockRef, handleTyping, blockRefs }
+    return { handleTyping }
 }

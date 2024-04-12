@@ -1,73 +1,89 @@
 <template>
   <div class="items-center column">
     <div class="q-my-xl"></div>
-    <div @focus="startTyping" @blur="endTyping" @keydown.prevent="typing" ref="inputContainer" tabindex="0" autofocus
-      class="row words-container">
-      <div ref="caret" class="caret"></div>
-      <div :ref="(el) => setBlockRef(el as HTMLElement, index)" v-for="(word, index) in words" :key="index"
-        class="column items-center word-block">
-        <div class="cn-word">{{ word.cn }}</div>
-        <div class="en-word">
-          <code v-for="(code, cIndex) in word.en" :key="cIndex">{{ code }}</code>
+    <div v-show="!showResult" class="items-center column">
+      <div @focus="startTyping" @blur="endTyping" @keydown.prevent="typing" @click="handleTyping" ref="inputContainer"
+        tabindex="0" autofocus class="row words-container">
+        <div ref="caret" class="caret"></div>
+        <div :ref="(el) => setBlockRef(el as HTMLElement, index)" v-for="(word, index) in words" :key="index"
+          class="column items-center word-block">
+          <div class="cn-word">{{ word.cn }}</div>
+          <div class="en-word">
+            <code v-for="(code, cIndex) in word.en" :key="cIndex">{{ code }}</code>
+          </div>
         </div>
       </div>
+      <q-btn class="re-btn" padding="xl" icon="refresh" size="lg" unelevated />
     </div>
-    <q-btn class="re-btn" padding="xl" icon="refresh" size="lg" unelevated />
+    <Transition name="result">
+      <div v-show="showResult" class="result items-center column">
+        <div class="row justify-around result-item-container">
+          <div class="result-item">
+            <div class="result-key">WPM</div>
+            <div class="result-value correct">{{ typingResult.wpm }}</div>
+          </div>
+          <div class="result-item">
+            <div class="result-key">正确率</div>
+            <div class="result-value correct">{{ typingResult.correctness }}</div>
+          </div>
+          <div class="result-item">
+            <div class="result-key">用时</div>
+            <div class="result-value correct">{{ typingResult.during }}</div>
+          </div>
+        </div>
+        <q-btn @click="restart" class="re-btn" padding="xl" icon="refresh" size="lg" unelevated />
+      </div>
+    </Transition>
   </div>
+
 </template>
 
 <script lang="ts" setup>
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import useCaret from '@/hooks/useCaret'
 import useTyping from '@/hooks/useTyping'
-import { type Block } from '@/types'
+import useProcess from '@/hooks/useProcess';
+import type { TypingResult } from '@/types';
 
-// 词组
-let words = ref([
+
+/* 数据 */
+let words = ref([  // 词组
   { cn: '测试', en: 'ceshi' },
   { cn: '测试', en: 'ceshi' },
-  { cn: '测试', en: 'yruiwer' },
-  { cn: '测试文字', en: 'ceshiwenzi' },
-  { cn: '测试', en: 'ceshi' },
-  { cn: '测试', en: 'nmxzcxvnm' },
-  { cn: '测试', en: 'ceshi' },
-  { cn: '测试', en: 'ceshiiiii' },
-  { cn: '测试文字', en: 'ceshiwenzi' },
-  { cn: '测试', en: 'ceshi' },
-  { cn: '测试文字', en: 'ceshiwenzi' },
-  { cn: '测试文字', en: 'ceshillkenzi' },
-  { cn: '测试', en: 'ceshi' },
-  { cn: '测试文字', en: 'ceshiwenzi' },
-  { cn: '测试文字', en: 'ceshiwenzi' },
-  { cn: '测试文字', en: 'ceshiwenzi' },
-  { cn: '测试', en: 'ceshi' },
-  { cn: '测试', en: 'ceshi' },
+  { cn: '测试', en: 'yruiwer' }
 ])
+let showResult = ref(false)   // 结果是否显示
+let typingResult = ref<TypingResult>({ wpm: '', correctness: '', during: '' })  // 结果显示数据
+let curIndex = ref<[number, number]>([0, 0])  // 当前caret索引，格式为 [block索引, code索引]
+let startTime = ref<number | null>(null)      // 计时：开始时间
 
-// 拼音映射
-let enWords = ref<Block[]>(words.value.map(({ cn, ...rest }) => rest))
-
-// 当前已输入
-
-// 当前caret索引，格式为 [block索引, code索引]
-let curIndex = ref([0, 0])
-
-// 监听索引变化
+// 监听索引变化，变化后定位浮标
 watch(curIndex, () => {
   handleTyping()
 }, { deep: true })
 
-// caret节点
-let caret = ref<HTMLElement | null>(null)
 
-// 定位caret与样式修改
-let { setBlockRef, handleTyping, blockRefs } = useCaret(caret, curIndex)
+/* 节点 */
+let caret = ref<HTMLElement | null>(null)   // caret元素节点
+const blockRefs = ref<HTMLElement[]>([])    // block元素ref节点集合
 
-// 键盘输入与修改索引
-let { startTyping, endTyping, typing } = useTyping(caret, curIndex, enWords, words, blockRefs)
+// 设置block动态ref集合
+const setBlockRef = (el: HTMLElement, index: number) => {
+  if (el) {
+    blockRefs.value[index] = el
+  }
+}
+
+
+/* 自定义hook */
+let { handleTyping } = useCaret(caret, curIndex, blockRefs)   // 根据索引定位caret
+let { handleEnd, restart } = useProcess(startTime, words, typingResult, curIndex, showResult)   // 处理开始和结束流程操作
+let { startTyping, endTyping, typing } = useTyping(caret, curIndex, words, blockRefs, handleEnd, startTime)   // 根据键盘输入修改索引与样式
+
 
 /* 生命周期 */
 onMounted(() => {
+  // 监听屏幕改动，实时调整浮标位置
   window.addEventListener('resize', handleTyping)
 })
 
@@ -97,7 +113,7 @@ onBeforeUnmount(() => {
 
   // 词组
   .word-block {
-    
+
     // 下方拼音
     .en-word {
       margin-top: -3px;
@@ -131,5 +147,36 @@ onBeforeUnmount(() => {
 .re-btn {
   margin-top: 80px;
   opacity: .5 !important;
+}
+
+// 结果显示
+.result {
+
+  position: absolute;
+  top: 30%;
+
+  .result-item-container {
+    .result-item {
+      margin: 0 80px;
+
+      .result-key {
+        font-size: 20px;
+        font-weight: 500;
+        opacity: .5;
+      }
+
+      .result-value {
+        font-size: 44px;
+      }
+    }
+  }
+}
+
+.result-enter-active {
+  transition: opacity 0.4s ease;
+}
+
+.result-enter-from {
+  opacity: 0;
 }
 </style>
