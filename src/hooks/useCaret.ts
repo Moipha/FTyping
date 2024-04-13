@@ -58,13 +58,5 @@ export default function (
         caretElement.style.left = `${caretLeft}px`
     }
 
-
-    /* 生命周期 */
-
-    // 挂载时定位caret
-    onMounted(() => {
-        handleTyping()
-    })
-
     return { handleTyping }
 }

@@ -28,3 +28,20 @@
 - `const { words, caret, blocksContainer } = storeToRefs(useTypingStore())`
 
 > 这里我引入 `blocksContainer`之后该ref才有了数据
+
+# 2024/4/13
+
+## 引入全局scss变量
+
+- 在 `vite.config.ts`中进行配置
+
+```typescript
+// 默认引入quasar提供的样式变量
+  css:{
+    preprocessorOptions: {
+      scss: { 
+        additionalData: '@import "@/assets/variables.scss";'
+      }
+    }
+  }
+```

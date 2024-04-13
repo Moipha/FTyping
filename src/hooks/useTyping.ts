@@ -1,5 +1,5 @@
 import { nextTick, type Ref } from "vue"
-import {useTypingStore} from '@/stores/useTypingStore'
+import { useTypingStore } from '@/stores/useTypingStore'
 import { storeToRefs } from "pinia"
 
 export default function (
@@ -8,7 +8,7 @@ export default function (
 ) {
 
     // 获取store中的数据
-    const { words, blockRefs, caret, enWords, startTime} = storeToRefs(useTypingStore())
+    const { words, blockRefs, caret, enWords, startTime } = storeToRefs(useTypingStore())
 
     // 开始输入
     function startTyping() {
@@ -50,22 +50,35 @@ export default function (
             }
 
             // 更新索引和输入内容
-            if (words.value.length > curIndex.value[0]) {
-                if (curIndex.value[1] < words.value[curIndex.value[0]].en.length) {
-                    curIndex.value[1]++
+
+            if (words.value.length <= curIndex.value[0]) {
+                console.error('block索引越界')
+            }
+
+            // 判断code部分是否有多余输入
+            if (curIndex.value[1] < words.value[curIndex.value[0]].en.length) {
+                // 判断，如果输入为最后一个block中最后一个索引，直接结束
+                if (curIndex.value[0] == words.value.length - 1 && curIndex.value[1] == enWords.value[curIndex.value[0]].en.length - 1) {
+                    handleEnd(enWords.value)
                 } else {
-                    if (words.value.length > curIndex.value[0] + 1) {
-                        words.value[curIndex.value[0]].en += e.key
-                        nextTick(() => {
-                            const target = codeElements[curIndex.value[1]] as HTMLElement
-                            target.classList.add('wrong')
-                            curIndex.value[1]++
-                        })
-                    } else {
-                        handleEnd(enWords.value)
-                    }
+                    curIndex.value[1]++
+                }
+            } else {
+                // 判断是否是最后一个block
+                if (words.value.length > curIndex.value[0] + 1) {
+                    // 如果不是，多余输入会添加到原code后
+                    words.value[curIndex.value[0]].en += e.key
+                    nextTick(() => {
+                        const target = codeElements[curIndex.value[1]] as HTMLElement
+                        target.classList.add('wrong')
+                        curIndex.value[1]++
+                    })
+                } else {
+                    // 如果是，多余输出会直接结束
+                    handleEnd(enWords.value)
                 }
             }
+
         } else if (e.code === 'Space') {
             // 处理空格键
             if (curIndex.value[1] != 0) {
@@ -83,8 +96,7 @@ export default function (
 
                     curIndex.value = [curIndex.value[0] + 1, 0] // 更新索引
                 } else {
-                    // 在最后一个block中按下空格，记录该block正误后结束
-                    enWords.value[curIndex.value[0]].isCorrect = enWords.value[curIndex.value[0]].typing == enWords.value[curIndex.value[0]].en
+                    // 在最后一个block中按下空格后结束
                     handleEnd(enWords.value)
                 }
             }

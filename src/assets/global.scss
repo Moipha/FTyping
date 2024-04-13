@@ -1,5 +1,4 @@
 @import './animation.scss';
-@import './variables.scss';
 
 * {
     margin: 0;
@@ -20,15 +19,16 @@ body {
 }
 
 .wrong {
-    color: $negative;
+    color: $alert-color;
     opacity: 1 !important;
 }
 
 .correct {
-    color: $positive;
+    color: $active-color;
     opacity: 1 !important;
 }
 
 .skip {
-    color: $negative;
+    color: $alert-color;
 }
+

@@ -16,6 +16,8 @@ export default function (
 
     // 输入完成后的操作
     function handleEnd(enWords: Block[]) {
+        // 判断最后未记录正误的block输入是否正确
+        enWords[curIndex.value[0]].isCorrect = enWords[curIndex.value[0]].typing == enWords[curIndex.value[0]].en
         // 计时：结束时间
         const endTime = Date.now()
         if (!startTime.value) {
@@ -68,8 +70,6 @@ export default function (
             // 聚焦
             if (blocksContainer.value) {
                 blocksContainer.value.focus()
-            } else {
-                alert("谔谔")
             }
             // 复位索引（定位浮标）
             curIndex.value = [0, 0]
