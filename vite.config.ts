@@ -5,6 +5,9 @@ import vue from '@vitejs/plugin-vue'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  // server: {
+  //   port: 80
+  // },
   base: '/f-typing/',
   build: {
     outDir: 'docs'
@@ -19,9 +22,9 @@ export default defineConfig({
   },
 
   // 默认引入quasar提供的样式变量
-  css:{
+  css: {
     preprocessorOptions: {
-      scss: { 
+      scss: {
         additionalData: '@import "@/assets/variables.scss";'
       }
     }

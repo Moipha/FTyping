@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
-    "js-pinyin": "^0.2.5",
     "pinia": "^2.1.7",
+    "pinyin-pro": "^3.20.0",
     "quasar": "^2.0.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"

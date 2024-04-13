@@ -2,7 +2,7 @@
   <div class="items-center column">
     <div class="q-my-xl"></div>
     <div v-show="!showResult" class="items-center column">
-      <div ref="blocksContainer" @focus="startTyping" @blur="endTyping" @keydown="typing" @click="handleTyping"
+      <div ref="blocksContainer" @focus="startTyping" @blur="endTyping" @keydown="typing" @keydown.space.prevent @click="handleTyping"
         tabindex="0" autofocus class="row words-container">
         <div ref="caret" class="caret"></div>
         <div :ref="(el) => setBlockRef(el as HTMLElement, index)" v-for="(word, index) in words" :key="index"
@@ -13,7 +13,7 @@
           </div>
         </div>
       </div>
-      <q-btn @keydown.space="restart" @click="restart" class="re-btn" padding="xl" icon="refresh" size="lg"
+      <q-btn @keydown.space.prevent="restart" @click="restart" class="re-btn" padding="xl" icon="refresh" size="lg"
         unelevated />
     </div>
     <Transition name="result">
@@ -32,7 +32,7 @@
             <div class="result-value correct">{{ typingResult.during }}</div>
           </div>
         </div>
-        <q-btn @keydown.space="restart" @click="restart" class="re-btn" padding="xl" icon="refresh" size="lg"
+        <q-btn @keydown.space.prevent="restart" @click="restart" class="re-btn" padding="xl" icon="refresh" size="lg"
           unelevated />
       </div>
     </Transition>
@@ -55,7 +55,7 @@ const { words, caret, blocksContainer } = storeToRefs(useTypingStore())
 const { generateWords, setBlockRef } = useTypingStore()
 
 // 生成随机词组
-generateWords(5)
+generateWords(20)
 
 
 /* 数据 */
@@ -172,5 +172,4 @@ onBeforeUnmount(() => {
 .result-enter-from {
   opacity: 0;
 }
-
 </style>

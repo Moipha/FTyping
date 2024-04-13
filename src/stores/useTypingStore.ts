@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-import pinyin from 'js-pinyin'
+import { pinyin } from 'pinyin-pro'
 import type { Block } from '@/types'
 
 export const useTypingStore = defineStore('typing', () => {
@@ -29,18 +29,25 @@ export const useTypingStore = defineStore('typing', () => {
         for (let i = 0; i < amount; i++) {
             // 生成一个随机索引
             const randomIndex = Math.floor(Math.random() * availableWords.length)
-
             // 从可用词块中获取并移除随机选择的词块
             const selectedWord = availableWords.splice(randomIndex, 1)[0]
-
             // 将选定的词块添加到 words 数组中
             words.value.push(selectedWord)
         }
-
         // 拼音映射，包括原字符串、当前输入字符串、输入是否正确三个属性的对象集合
         enWords.value = words.value.map(({ cn, ...rest }) => rest)
     }
 
+    // 设置词块
+    function setWords(words: string[]) {
+        const blocks = [] as Block[]
+        words.forEach((cn: string) => {
+            const en = pinyin(cn, { toneType: 'none', type: 'array' }).join('')
+            const block = { cn, en }
+            blocks.push(block)
+        })
+        localStorage.setItem('words', JSON.stringify(blocks))
+    }
 
     /* 节点 */
     const caret = ref<HTMLElement | null>(null)   // caret元素节点
@@ -64,6 +71,6 @@ export const useTypingStore = defineStore('typing', () => {
         }
     }
 
-    return { words, caret, blockRefs, enWords, startTime, blocksContainer, setBlockRef, generateWords, updateRefs }
+    return { words, caret, blockRefs, enWords, startTime, blocksContainer, setBlockRef, generateWords, updateRefs, setWords }
 
 })

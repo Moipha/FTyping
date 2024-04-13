@@ -1,5 +1,5 @@
 import type { Block, TypingResult } from "@/types"
-import { ref, type Ref } from "vue"
+import { onBeforeUnmount, ref, type Ref } from "vue"
 import { useTypingStore } from '@/stores/useTypingStore'
 import { storeToRefs } from "pinia"
 import { nextTick } from "vue"
@@ -81,8 +81,14 @@ export default function (
         // 更新动态节点
         updateRefs()
         // 获取随机词块
-        generateWords(5)
+        generateWords(20)
     }
+
+    /* 生命周期 */
+    onBeforeUnmount(() => {
+        // 组件销毁时计时结束
+        startTime.value = null
+    })
 
     return { handleEnd, restart }
 }
