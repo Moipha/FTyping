@@ -2,27 +2,49 @@
   <q-separator color="white" />
 
   <q-splitter v-model="splitterModel" separator-style="background-color: white" style="height: calc(100vh - 170px)">
+    <!-- 左侧 -->
     <template v-slot:before>
-      <div class="q-pa-lg">
+      <div class="q-pa-md">
         <q-tree no-selection-unset text-color="white" color="white" :nodes="simple" node-key="label"
-          selected-color="amber" v-model:selected="selected" default-expand-all />
+          selected-color="amber" v-model:selected="selected" default-expand-all>
+          <template v-slot:default-header="prop">
+            <div class="row items-center q-ma-xs">
+              <q-icon :name="prop.node.icon || 'share'" :size="prop.node.iconSize" class="q-mr-sm" />
+              <div class="text-weight-bold" :style="`font-size: ${prop.node.fontSize}`">{{ prop.node.label }}</div>
+            </div>
+          </template>
+        </q-tree>
       </div>
     </template>
+    <!-- 分割线 -->
     <template v-slot:separator>
       <q-avatar color="amber" text-color="black" size="40px" icon="drag_indicator" />
     </template>
+    <!-- 右侧 -->
     <template v-slot:after>
-      <q-tab-panels class="q-pa-sm" v-model="selected" animated transition-prev="slide-right"
-        transition-next="slide-left">
+      <q-tab-panels class="q-pa-sm" v-model="selected" animated transition-prev="slide-down" transition-next="slide-up">
         <q-tab-panel name="计时模式">
-          <div class="text-h5">词组设置</div>
-          <div class="q-pa-md q-my-md">
-            <q-toggle size="50px" color="amber" dark v-model="useDefaultWords"><span
+          <div class="q-px-lg q-py-sm">
+            <div class="text-h5 q-pl-sm">词组设置</div>
+            <!-- 开关 -->
+            <q-toggle @update:model-value="((b: boolean) => handleToggleChange(b))" class="q-mt-lg" size="50px"
+              color="amber" dark v-model="settings.useDefaultWords"><span
                 class="text-subtitle1 q-ml-sm">使用默认词组</span></q-toggle>
-            <q-input :disable="!useDefaultWords" color="amber" input-class="words-input" class="q-mt-sm"
-              v-model="wordsString" autogrow outlined />
-            <q-btn @click="saveWords" :disable="!useDefaultWords" push class="float-right q-mt-sm" size="16px"
-              color="amber" text-color="black"><span class="q-px-md">保存</span></q-btn>
+            <!-- 文本域 -->
+            <q-input :disable="settings.useDefaultWords" color="amber" input-class="words-input" class="q-mt-sm"
+              v-model="settings.wordsString" autogrow outlined />
+            <q-btn @click="saveSettings(settings)" :disable="settings.useDefaultWords" push class="float-right q-mt-sm"
+              size="16px" color="amber" text-color="black"><span class="q-px-md">保存</span></q-btn>
+            <!-- 选项组 -->
+            <div class="row q-mt-xl">
+              <div class="col-2 row items-center text-subtitle1 q-ml-md">默认生成词数</div>
+              <div class="col">
+                <q-option-group @update:model-value="((num: number) => handleWordsNumChange(num))"
+                  v-model="settings.generateWordsNum" :options="options" color="amber" dark inline />
+              </div>
+
+            </div>
+
           </div>
         </q-tab-panel>
 
@@ -66,10 +88,10 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import {useTypingStore} from '@/stores/useTypingStore'
+import { useTypingStore } from '@/stores/useTypingStore'
 
 // 获取store中的数据
-const {setWords} = useTypingStore()
+const { saveSettings, settings } = useTypingStore()
 
 // 切分窗口中线位置
 const splitterModel = ref(20)
@@ -80,49 +102,64 @@ const selected = ref('计时模式')
 const simple = ref([{
   label: '设置',
   icon: 'settings',
-  enabled: false,
+  fontSize: '1.5rem',
+  iconSize: '2rem',
   children: [
     {
       label: '计时模式',
-      icon: 'restaurant_menu',
-      children: [
-        {
-          label: '词组'
-        }
-      ]
+      icon: 'alarm',
+      fontSize: '1rem',
+      iconSize: '1.4rem',
     },
     {
       label: '限时模式',
-      icon: 'room_service'
+      icon: 'notifications_none',
+      fontSize: '1rem',
+      iconSize: '1.4rem',
     },
     {
       label: '其他设置',
-      icon: 'photo'
+      icon: 'more_horiz',
+      fontSize: '1rem',
+      iconSize: '1.4rem',
     }
   ]
 }])
 
+// 选项
+const options = [
+  {
+    label: '20',
+    value: 20,
+  },
+  {
+    label: '30',
+    value: 30
+  },
+  {
+    label: '40',
+    value: 40
+  },
+  {
+    label: '50',
+    value: 50
+  }
+]
+
 
 /* 计时模式 */
 
-// 是否使用默认词组
-const useDefaultWords = ref(false)
-// 词组总字符串，词组间用 | 分隔
-const wordsString = ref('邮件|离开|准备|庆祝|宿舍|注意|非常|家庭|去年|点心|上课|美丽|德国|一定|着急|铅笔|痛苦|必须|病人|现在|牛奶|月亮|早上|简单|瓶子|哥哥|音乐|筷子|还是|桌子|看见|一边|大声|风景|餐厅|木头|新年|嘴巴|应该|过来|今天|真好|奥利奥|键盘|真实|优联|蓝牙|无线|三明治|胶条|星夜|奶油|熊猫|可乐|海外|矩阵|塑料|大骨|营地|无限|虚拟|电玩|徽章|北极圈|仁王|怪物|猎人|大佬|开车|代组|亚克力|黄铜|不锈钢|铝锭|注塑|菠萝|霓虹|螺丝|卫星轴|红白机|幻影|日文|俄文|键帽|套件|碳纤维|玻纤|热升华|头发|客厅|游泳池|周末|弟弟|可爱|鹦鹉|漂白|电泳|武士道|码农|脉冲|蒸汽波|青柠|声波|橄榄|前锋|深空|原点|樱花|原厂|静电容|抛光|佳达隆|宁芝|北极星|退烧|吃瓜|解毒|摸鱼|樱桃|树懒|模拟|激光|阳极|喷涂|便当|夜行者|锤头鲨|核子|涂改|神佑|注音|桃花|暗黑|海岸|巧克力|斯巴达|鬼魂|爆裂|绿洲|标本|巫妖|永恒|奶昔|河马|使命|召唤|黑色|行动|白色|牛头|个性|战神|现代|战争|凯华|精微科|空间|东方|山水|微光|西装|血缘|诅咒|钢板|打卡|签到|上班|双模|单模|划水|外卖|赞助|打赏|机械|开关|游戏|无敌|瞎眼|心态|照片|润滑|联机|配重|设计|装饰|铭牌|定制|独木舟|边牧|产品|鼠标|外设|交流|磨砂|透光|打字|玩具|品牌|工作室')
-
-// 保存词组至本地存储
-function saveWords() {
-  // 获取词组
-  const words = wordsString.value.split('|')
-  // 去重
-  const uniqueWords = [...new Set(words)]
-  // 检查词数是否足够最低限制
-  if (uniqueWords.length < 20) {
-    alert('保存失败，词组数量过少！')
-    return
-  }
-  // 保存
-  setWords(words)
+// 选项组变动
+function handleWordsNumChange(value: number) {
+  settings.generateWordsNum = value
+  // 更新配置项
+  saveSettings(settings)
+}
+// 开关变动
+function handleToggleChange(b: boolean) {
+  settings.useDefaultWords = b
+  // 更新配置项
+  saveSettings(settings)
 }
 
 </script>

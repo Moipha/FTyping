@@ -2,8 +2,8 @@
   <div class="items-center column">
     <div class="q-my-xl"></div>
     <div v-show="!showResult" class="items-center column">
-      <div ref="blocksContainer" @focus="startTyping" @blur="endTyping" @keydown="typing" @keydown.space.prevent @click="handleTyping"
-        tabindex="0" autofocus class="row words-container">
+      <div ref="blocksContainer" @focus="startTyping" @blur="endTyping" @keydown="typing" @keydown.space.prevent
+        @click="handleTyping" tabindex="0" class="row words-container">
         <div ref="caret" class="caret"></div>
         <div :ref="(el) => setBlockRef(el as HTMLElement, index)" v-for="(word, index) in words" :key="index"
           class="column items-center word-block">
@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch, nextTick } from 'vue'
 import useCaret from '@/hooks/useCaret'
 import useTyping from '@/hooks/useTyping'
 import useProcess from '@/hooks/useProcess'
@@ -53,9 +53,6 @@ import { storeToRefs } from 'pinia'
 /* store中的数据 */
 const { words, caret, blocksContainer } = storeToRefs(useTypingStore())
 const { generateWords, setBlockRef } = useTypingStore()
-
-// 生成随机词组
-generateWords(20)
 
 
 /* 数据 */
@@ -69,6 +66,13 @@ const { handleEnd, restart } = useProcess(typingResult, curIndex, showResult)   
 const { startTyping, endTyping, typing } = useTyping(curIndex, handleEnd)   // 根据键盘输入修改索引与样式
 
 /* 生命周期 */
+
+nextTick(() => {
+  // 手动聚焦
+  if (blocksContainer.value) {
+    blocksContainer.value.focus()
+  }
+})
 
 onMounted(() => {
   // 监听屏幕改动，实时调整浮标位置

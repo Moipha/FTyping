@@ -17,3 +17,13 @@ export interface TypingResult {
     // 总用时
     during: string
 }
+
+// 配置项
+export interface Settings {
+    // 是否使用默认词组
+    useDefaultWords: boolean
+    // 词组总字符串，词组间用 | 分隔
+    wordsString: string
+    // 默认生成词数
+    generateWordsNum: number
+}
