@@ -6,12 +6,27 @@ import type { Block, Settings } from '@/types'
 import { useQuasar } from 'quasar'
 
 export const useTypingStore = defineStore('typing', () => {
+    // 判断是否是竖屏模式
+    const mediaQuery = window.matchMedia('(max-width: 500px)')
+    const isPhone = ref<boolean>(mediaQuery.matches)
+    // 定义一个处理函数，用于更新 isPhone 的值
+    const handleMediaQueryChange = (event: MediaQueryListEvent) => {
+        isPhone.value = event.matches
+    }
+    // 添加监听器，监听媒体查询结果的变化
+    mediaQuery.addEventListener('change', handleMediaQueryChange)
+
+
     // 获取quasar内置插件
     const $q = useQuasar()
     // 计时：开始时间
     const startTime = ref<number | null>(null)
     // 获取设置的全部词块
-    const allWords = JSON.parse(localStorage.getItem('words') || '')
+    let allWords: null | Block = null
+    if (localStorage.getItem('words')) {
+        allWords = JSON.parse(localStorage.getItem('words') as string)
+    }
+
     const words = ref<{ cn: string, en: string }[]>([])
     const enWords = ref<Block[]>([])
 
@@ -24,15 +39,29 @@ export const useTypingStore = defineStore('typing', () => {
         // 默认生成词数
         generateWordsNum: 20
     })
+
+    // 是否已有弹窗
+    const isNotificationShowing = ref(false)
+
     // 根据内存中的设置设定设置的初始值
     if (localStorage.getItem('settings')) {
         settings.value = JSON.parse(localStorage.getItem('settings') as string)
+    } else {
+        // 如果内存中没有设置，将初始设置保存
+        isNotificationShowing.value = true
+        saveSettings(settings.value)
+        allWords = JSON.parse(localStorage.getItem('words') as string)
+        isNotificationShowing.value = false
     }
     // 生成指定数量的随机词块
     function generateWords(amount: number) {
         // 浅拷贝，以避免直接修改allWords
         const availableWords = JSON.parse(JSON.stringify(allWords))
 
+        if (!availableWords) {
+            console.error('当前无词块')
+            return
+        }
         // 如果可用词块数量不足，则直接返回
         if (availableWords.length < amount) {
             console.error("可用词块数不足")
@@ -97,8 +126,6 @@ export const useTypingStore = defineStore('typing', () => {
             })
         }, 2000)
     }
-    // 是否已有弹窗
-    const isNotificationShowing = ref(false)
 
     /* 节点 */
     const caret = ref<HTMLElement | null>(null)   // caret元素节点
@@ -123,6 +150,6 @@ export const useTypingStore = defineStore('typing', () => {
     }
 
 
-    return { words, caret, blockRefs, enWords, startTime, blocksContainer, settings, setBlockRef, generateWords, updateRefs, saveSettings }
+    return { words, caret, blockRefs, enWords, startTime, blocksContainer, settings,isPhone, setBlockRef, generateWords, updateRefs, saveSettings }
 
 })

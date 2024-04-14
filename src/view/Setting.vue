@@ -1,11 +1,12 @@
 <template>
   <q-separator color="white" />
 
-  <q-splitter v-model="splitterModel" separator-style="background-color: white" style="height: calc(100vh - 170px)">
+  <q-splitter :horizontal="isPhone" v-model="splitterModel" separator-style="background-color: white"
+    style="height: calc(100vh - 170px)">
     <!-- 左侧 -->
     <template v-slot:before>
       <div class="q-pa-md">
-        <q-tree no-selection-unset text-color="white" color="white" :nodes="simple" node-key="label"
+        <q-tree :dense="isPhone" no-selection-unset text-color="white" color="white" :nodes="simple" node-key="label"
           selected-color="amber" v-model:selected="selected" default-expand-all>
           <template v-slot:default-header="prop">
             <div class="row items-center q-ma-xs">
@@ -39,7 +40,7 @@
               size="16px" color="amber" text-color="black"><span class="q-px-md">保存</span></q-btn>
             <!-- 选项组 -->
             <div class="row q-mt-xl">
-              <div class="col-2 row items-center text-subtitle1 q-ml-md">默认生成词数</div>
+              <div class="row items-center text-subtitle1 q-ml-md" :class="isPhone?'col-12':'col-2'">默认生成词数</div>
               <div class="col">
                 <q-option-group @update:model-value="((num: number) => handleWordsNumChange(num))"
                   v-model="settings.generateWordsNum" :options="options" color="amber" dark inline />
@@ -67,12 +68,17 @@ import { nextTick, ref } from 'vue'
 import { useTypingStore } from '@/stores/useTypingStore'
 
 // 获取store中的数据
-const { saveSettings, settings } = useTypingStore()
+const { saveSettings, settings, isPhone } = useTypingStore()
+
+
+
+
 
 // 切分窗口中线位置
-const splitterModel = ref(20)
+const splitterModel = ref(isPhone ? 30 : 20)
 // 默认选中
 const selected = ref('计时模式')
+
 
 // 树状选项
 const simple = ref([{

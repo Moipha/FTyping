@@ -1,4 +1,4 @@
-import { onMounted, type Ref } from 'vue'
+import { type Ref } from 'vue'
 import { useTypingStore } from '@/stores/useTypingStore'
 import { storeToRefs } from 'pinia'
 
@@ -6,7 +6,7 @@ export default function (
     curIndex: Ref<[number, number]>
 ) {
     // 获取store中的数据
-    const { blockRefs, caret } = storeToRefs(useTypingStore())
+    const { blockRefs, caret, blocksContainer } = storeToRefs(useTypingStore())
 
 
     // 处理键盘事件

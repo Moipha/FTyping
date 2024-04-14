@@ -19,8 +19,8 @@
           </div>
         </div>
       </div>
-      <q-btn @keydown.space.prevent="restart" @click="restart(curNum)" class="re-btn" padding="xl" icon="refresh"
-        size="lg" unelevated />
+      <q-btn @keydown.space.prevent="restart(curNum)" @click="restart(curNum)" class="re-btn" padding="xl"
+        icon="refresh" size="lg" unelevated />
     </div>
     <Transition name="result">
       <div v-show="showResult" class="result items-center column">
@@ -38,8 +38,8 @@
             <div class="result-value correct">{{ typingResult.during }}</div>
           </div>
         </div>
-        <q-btn @keydown.space.prevent="restart" @click="restart(curNum)" class="re-btn" padding="xl" icon="refresh"
-          size="lg" unelevated />
+        <q-btn @keydown.space.prevent="restart(curNum)" @click="restart(curNum)" class="re-btn" padding="xl"
+          icon="refresh" size="lg" unelevated />
       </div>
     </Transition>
   </div>
@@ -77,9 +77,11 @@ const { startTyping, endTyping, typing } = useTyping(curIndex, handleEnd)   // �
 
 // 选择词数
 function chooseNum(num: number) {
-  curNum.value = num
-  // 重新生成
-  restart(curNum.value)
+  if (curNum.value != num) {
+    curNum.value = num
+    // 重新生成
+    restart(curNum.value)
+  }
 }
 
 
@@ -131,6 +133,10 @@ onBeforeUnmount(() => {
 
 // 词组容器
 .words-container {
+@media (width < 500px) {
+  width: 90vw;
+}
+
   width: 900px;
   gap: 15px;
   user-select: none;
