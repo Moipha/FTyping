@@ -73,21 +73,32 @@ export const useTypingStore = defineStore('typing', () => {
         localStorage.setItem('words', JSON.stringify(blocks))
         localStorage.setItem('settings', JSON.stringify(setting))
 
+
+        // 如果已经有弹窗在显示，则不再重复显示
+        if (isNotificationShowing.value) {
+            return
+        }
         // 显示弹窗
+        isNotificationShowing.value = true;
         const notif = $q.notify({
             type: 'ongoing',
-            message: 'Looking up the search terms...'
+            message: '更新设置中...',
+            position: 'bottom-right',
+            onDismiss: () => {
+                isNotificationShowing.value = false; // 弹窗关闭时更新状态
+            }
         })
-
-        // simulate delay
+        // 延迟关闭弹窗
         setTimeout(() => {
             notif({
                 type: 'positive',
-                message: 'Found the results that you were looking for',
-                timeout: 1000
+                message: '已保存当前设置',
+                timeout: 1000,
             })
-        }, 4000)
+        }, 2000)
     }
+    // 是否已有弹窗
+    const isNotificationShowing = ref(false)
 
     /* 节点 */
     const caret = ref<HTMLElement | null>(null)   // caret元素节点

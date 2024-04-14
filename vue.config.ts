@@ -6,9 +6,6 @@ export default defineConfig({
       rtlSupport: false
     },
   },
-  configureWebpack: {
-    plugins: ['Notify'], // 在这里添加你想要的 Quasar 插件
-  },
   transpileDependencies: [
     'quasar'
   ],

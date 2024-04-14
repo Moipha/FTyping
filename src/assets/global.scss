@@ -32,3 +32,26 @@ body {
     color: $alert-color;
 }
 
+
+/* 滚动条轨道 */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+/* 滚动条轨道背景 */
+::-webkit-scrollbar-track {
+    background: darken($active-color, 30%);
+}
+
+/* 滚动条thumb（拖动条） */
+::-webkit-scrollbar-thumb {
+    background: $active-color;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* 滚动条thumb hover状态 */
+::-webkit-scrollbar-thumb:hover {
+    background: darken($active-color, 10%);
+}

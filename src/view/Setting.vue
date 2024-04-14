@@ -32,7 +32,9 @@
                 class="text-subtitle1 q-ml-sm">使用默认词组</span></q-toggle>
             <!-- 文本域 -->
             <q-input :disable="settings.useDefaultWords" color="amber" input-class="words-input" class="q-mt-sm"
-              v-model="settings.wordsString" autogrow outlined />
+              v-model="settings.wordsString" autogrow outlined>
+              <q-resize-observer @resize="handleTextAreaResize" />
+            </q-input>
             <q-btn @click="saveSettings(settings)" :disable="settings.useDefaultWords" push class="float-right q-mt-sm"
               size="16px" color="amber" text-color="black"><span class="q-px-md">保存</span></q-btn>
             <!-- 选项组 -->
@@ -42,43 +44,17 @@
                 <q-option-group @update:model-value="((num: number) => handleWordsNumChange(num))"
                   v-model="settings.generateWordsNum" :options="options" color="amber" dark inline />
               </div>
-
             </div>
 
           </div>
         </q-tab-panel>
 
         <q-tab-panel name="限时模式">
-          <div class="text-h4 q-mb-md">Food</div>
-          <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
-            quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam.
-            In, libero.</p>
-          <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
-            quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam.
-            In, libero.</p>
+          限时模式设置
         </q-tab-panel>
 
-        <q-tab-panel name="其他设置">
-          <div class="text-h4 q-mb-md">Room service</div>
-          <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
-            quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam.
-            In, libero.</p>
-          <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
-            quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam.
-            In, libero.</p>
-          <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
-            quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam.
-            In, libero.</p>
-        </q-tab-panel>
-
-        <q-tab-panel name="Room view">
-          <div class="text-h4 q-mb-md">Room view</div>
-          <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
-            quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam.
-            In, libero.</p>
-          <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quis praesentium cumque magnam odio iure
-            quidem, quod illum numquam possimus obcaecati commodi minima assumenda consectetur culpa fuga nulla ullam.
-            In, libero.</p>
+        <q-tab-panel name="主题">
+          主题设置
         </q-tab-panel>
       </q-tab-panels>
     </template>
@@ -87,7 +63,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { useTypingStore } from '@/stores/useTypingStore'
 
 // 获取store中的数据
@@ -118,8 +94,8 @@ const simple = ref([{
       iconSize: '1.4rem',
     },
     {
-      label: '其他设置',
-      icon: 'more_horiz',
+      label: '主题',
+      icon: 'color_lens',
       fontSize: '1rem',
       iconSize: '1.4rem',
     }
@@ -162,6 +138,17 @@ function handleToggleChange(b: boolean) {
   saveSettings(settings)
 }
 
+// 文本域大小变动
+function handleTextAreaResize() {
+  // 通过修改文本域中的内容来唤起autogrow
+  if (settings.wordsString) {
+    settings.wordsString += ' '
+    nextTick(() => {
+      settings.wordsString = settings.wordsString.substring(0, settings.wordsString.length - 1)
+    })
+  }
+}
+
 </script>
 
 <style lang="scss" scoped>
@@ -174,6 +161,7 @@ function handleToggleChange(b: boolean) {
 }
 </style>
 <style lang="scss">
+// 修改文本域样式
 .words-input {
   color: white;
   font-size: 18px;
@@ -183,7 +171,15 @@ function handleToggleChange(b: boolean) {
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
 }
 
+// 删除文本域的边框
 .q-field__control::before {
   border-color: transparent !important;
+}
+
+// 左侧除active状态的节点添加透明度
+.q-tree__node--link {
+  &:not(.q-tree__node--selected) {
+    opacity: .8;
+  }
 }
 </style>

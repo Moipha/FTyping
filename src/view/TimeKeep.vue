@@ -1,6 +1,12 @@
 <template>
   <div class="items-center column">
-    <div class="q-my-xl"></div>
+    <!-- 生成词数选择 -->
+    <div class="q-ma-lg num-chooser">
+      <span v-for="(num, index) in availableNum" :key="index">
+        <span v-if="index != 0" class="num-chooser-split">/</span>
+        <span @click="chooseNum(num)" :class="curNum == num ? 'correct' : ''" class="num-chooser-num">{{ num }}</span>
+      </span>
+    </div>
     <div v-show="!showResult" class="items-center column">
       <div ref="blocksContainer" @focus="startTyping" @blur="endTyping" @keydown="typing" @keydown.space.prevent
         @click="handleTyping" tabindex="0" class="row words-container">
@@ -13,8 +19,8 @@
           </div>
         </div>
       </div>
-      <q-btn @keydown.space.prevent="restart" @click="restart" class="re-btn" padding="xl" icon="refresh" size="lg"
-        unelevated />
+      <q-btn @keydown.space.prevent="restart" @click="restart(curNum)" class="re-btn" padding="xl" icon="refresh"
+        size="lg" unelevated />
     </div>
     <Transition name="result">
       <div v-show="showResult" class="result items-center column">
@@ -32,8 +38,8 @@
             <div class="result-value correct">{{ typingResult.during }}</div>
           </div>
         </div>
-        <q-btn @keydown.space.prevent="restart" @click="restart" class="re-btn" padding="xl" icon="refresh" size="lg"
-          unelevated />
+        <q-btn @keydown.space.prevent="restart" @click="restart(curNum)" class="re-btn" padding="xl" icon="refresh"
+          size="lg" unelevated />
       </div>
     </Transition>
   </div>
@@ -52,18 +58,30 @@ import { storeToRefs } from 'pinia'
 
 /* store中的数据 */
 const { words, caret, blocksContainer } = storeToRefs(useTypingStore())
-const { generateWords, setBlockRef } = useTypingStore()
+const { setBlockRef, settings } = useTypingStore()
 
 
 /* 数据 */
 const showResult = ref(false)   // 结果是否显示
 const typingResult = ref<TypingResult>({ wpm: '', correctness: '', during: '' })  // 结果显示数据
 const curIndex = ref<[number, number]>([0, 0])  // 当前caret索引，格式为 [block索引, code索引]
+const curNum = ref(settings.generateWordsNum)   // 当前生成词数
+const availableNum = ref([20, 30, 40, 50])      // 可生成词数
 
 /* 自定义hook */
 const { handleTyping } = useCaret(curIndex)   // 根据索引定位caret
 const { handleEnd, restart } = useProcess(typingResult, curIndex, showResult)   // 处理开始和结束流程操作
 const { startTyping, endTyping, typing } = useTyping(curIndex, handleEnd)   // 根据键盘输入修改索引与样式
+
+/* 方法 */
+
+// 选择词数
+function chooseNum(num: number) {
+  curNum.value = num
+  // 重新生成
+  restart(curNum.value)
+}
+
 
 /* 生命周期 */
 
@@ -91,6 +109,26 @@ onBeforeUnmount(() => {
 </script>
 
 <style lang="scss" scoped>
+// 选择词数
+.num-chooser {
+  align-self: flex-start;
+  font-size: 1rem;
+  user-select: none;
+
+  .num-chooser-num {
+    cursor: pointer;
+    padding: 5px;
+    opacity: .5;
+    transition: 0.5s;
+  }
+
+  .num-chooser-split {
+    font-weight: bolder;
+    opacity: .5;
+
+  }
+}
+
 // 词组容器
 .words-container {
   width: 900px;

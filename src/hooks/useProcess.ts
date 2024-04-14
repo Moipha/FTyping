@@ -47,7 +47,7 @@ export default function (
     }
 
     // 重新开始
-    function restart() {
+    function restart(wordsNum: number) {
         // 去除所有样式
         blockRefs.value.forEach((r) => {
             // 去除汉字样式
@@ -61,7 +61,7 @@ export default function (
         // 开始时间设为初始状态
         startTime.value = null
         // 生成新的词块
-        generateBlocks()
+        generateBlocks(wordsNum)
         // 隐藏结果界面
         showResult.value = false
         // 需要渲染后进行的操作
@@ -76,11 +76,11 @@ export default function (
     }
 
     // 生成词块
-    function generateBlocks() {
+    function generateBlocks(wordsNum:number) {
         // 更新动态节点
         updateRefs()
         // 获取随机词块
-        generateWords(settings.generateWordsNum)
+        generateWords(wordsNum)
     }
 
     /* 生命周期 */
