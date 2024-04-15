@@ -112,7 +112,7 @@ export const useTypingStore = defineStore('typing', () => {
         const notif = $q.notify({
             type: 'ongoing',
             message: '更新设置中...',
-            position: 'bottom-right',
+            position: isPhone.value ? 'bottom' : 'bottom-right',
             onDismiss: () => {
                 isNotificationShowing.value = false; // 弹窗关闭时更新状态
             }
@@ -150,6 +150,6 @@ export const useTypingStore = defineStore('typing', () => {
     }
 
 
-    return { words, caret, blockRefs, enWords, startTime, blocksContainer, settings,isPhone, setBlockRef, generateWords, updateRefs, saveSettings }
+    return { words, caret, blockRefs, enWords, startTime, blocksContainer, settings, isPhone, setBlockRef, generateWords, updateRefs, saveSettings }
 
 })

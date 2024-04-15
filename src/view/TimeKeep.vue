@@ -21,12 +21,29 @@
       </div>
       <q-btn @keydown.space.prevent="restart(curNum)" @click="restart(curNum)" class="re-btn" padding="xl"
         icon="refresh" size="lg" unelevated />
+      <div :class="startTime ? 'transport' : ''" class="tip column q-mt-xl items-center">
+        <span>点击任意词块开始输入</span>
+        <span>按<q-btn padding="0px 3px" push label="Space" />可以进入下一个词块</span>
+        <span>输入状态<q-btn padding="0px 3px" push label="Tab" />后按下<q-btn padding="0px 3px" push
+            label="Space" />可以重来</span>
+        <span>从右上角进入设置 可以对样式和功能进行定制</span>
+        <span>我们将于该提示隐藏时开始计时</span>
+        <span>祝玩得开心 : )</span>
+      </div>
     </div>
     <Transition name="result">
       <div v-show="showResult" class="result items-center column">
         <div class="row justify-around result-item-container">
           <div class="result-item">
-            <div class="result-key">WPM</div>
+            <div class="result-key row items-center">WPM
+              <q-icon class="q-ml-xs cursor-pointer" name="info">
+                <q-tooltip transition-show="scale" transition-hide="scale" class="text-black bg-amber"
+                  anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                  <em style="text-decoration: underline;font-size: 14px">Words Per Minute</em><br>
+                  <span style="font-size: 13px;">每分钟键入的单词数</span>
+                </q-tooltip>
+              </q-icon>
+            </div>
             <div class="result-value correct">{{ typingResult.wpm }}</div>
           </div>
           <div class="result-item">
@@ -57,7 +74,7 @@ import { storeToRefs } from 'pinia'
 
 
 /* store中的数据 */
-const { words, caret, blocksContainer } = storeToRefs(useTypingStore())
+const { words, caret, blocksContainer, startTime } = storeToRefs(useTypingStore())
 const { setBlockRef, settings } = useTypingStore()
 
 
@@ -133,11 +150,11 @@ onBeforeUnmount(() => {
 
 // 词组容器
 .words-container {
-@media (width < 500px) {
-  width: 90vw;
-}
+  @media (width < 500px) {
+    width: 90vw;
+  }
 
-  width: 900px;
+  width: 60vw;
   gap: 15px;
   user-select: none;
 
@@ -219,5 +236,24 @@ onBeforeUnmount(() => {
 
 .result-enter-from {
   opacity: 0;
+}
+
+/* 提示文字 */
+.tip {
+  user-select: none;
+  opacity: .5;
+  font-size: 12px;
+  transition: 1s;
+  line-height: 1.7;
+
+  .q-btn {
+    border-radius: 4px;
+    color: black;
+    font-size: 10px;
+    background-color: white;
+    margin: 0 3px;
+  }
+
+  animation: fade-in 1s ease-in-out;
 }
 </style>

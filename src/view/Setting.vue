@@ -40,7 +40,7 @@
               size="16px" color="amber" text-color="black"><span class="q-px-md">保存</span></q-btn>
             <!-- 选项组 -->
             <div class="row q-mt-xl">
-              <div class="row items-center text-subtitle1 q-ml-md" :class="isPhone?'col-12':'col-2'">默认生成词数</div>
+              <div class="row items-center text-subtitle1 q-ml-md" :class="isPhone ? 'col-12' : 'col-2'">默认生成词数</div>
               <div class="col">
                 <q-option-group @update:model-value="((num: number) => handleWordsNumChange(num))"
                   v-model="settings.generateWordsNum" :options="options" color="amber" dark inline />
@@ -66,16 +66,15 @@
 <script lang="ts" setup>
 import { nextTick, ref } from 'vue'
 import { useTypingStore } from '@/stores/useTypingStore'
+import { storeToRefs } from 'pinia';
 
 // 获取store中的数据
-const { saveSettings, settings, isPhone } = useTypingStore()
-
-
-
+const { saveSettings, settings } = useTypingStore()
+const { isPhone } = storeToRefs(useTypingStore())
 
 
 // 切分窗口中线位置
-const splitterModel = ref(isPhone ? 30 : 20)
+const splitterModel = ref(isPhone.value ? 30 : 20)
 // 默认选中
 const selected = ref('计时模式')
 

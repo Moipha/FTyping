@@ -32,6 +32,10 @@ body {
     color: $alert-color;
 }
 
+.transport{
+    opacity: 0 !important;
+}
+
 
 /* 滚动条轨道 */
 ::-webkit-scrollbar {
