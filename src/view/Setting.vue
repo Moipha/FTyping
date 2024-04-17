@@ -28,12 +28,21 @@
           <div class="q-px-lg q-py-sm">
             <div class="text-h5 q-pl-sm">词组设置</div>
             <!-- 开关 -->
-            <q-toggle @update:model-value="((b: boolean) => handleToggleChange(b))" class="q-mt-lg" size="50px"
-              color="active" dark v-model="settings.useDefaultWords"><span
-                class="text-subtitle1 q-ml-sm">使用默认词组</span></q-toggle>
+            <div class="row items-center q-mt-xl">
+              <q-toggle @update:model-value="((b: boolean) => handleToggleChange(b))" size="50px" color="active" dark
+                v-model="settings.useDefaultWords"><span class="text-subtitle1">使用默认词组</span></q-toggle>
+              <q-icon size="20px" color="info" class="q-ml-xs cursor-pointer" name="info">
+                <q-tooltip transition-show="scale" transition-hide="scale" class="text-btnText bg-active"
+                  anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                  <b style="font-size: 13px">设置词组时注意词组间用 | 分隔；</b><br>
+                  <b style="font-size: 13px">在保存时会自动忽略重复词组</b>
+                </q-tooltip>
+              </q-icon>
+              <span class="words-count q-ml-lg">共{{ [...new Set(calcString.split('|'))].filter(str => str.trim() !== '').length }}词</span>
+            </div>
             <!-- 文本域 -->
             <q-input :disable="settings.useDefaultWords" color="active" input-class="words-input" class="q-mt-sm"
-              v-model="settings.wordsString" autogrow outlined>
+              v-model="calcString" autogrow outlined>
               <q-resize-observer @resize="handleTextAreaResize" />
             </q-input>
             <q-btn @click="saveSettings(settings)" :disable="settings.useDefaultWords" push class="float-right q-mt-sm"
@@ -64,7 +73,7 @@
 </template>
 
 <script lang="ts" setup>
-import { nextTick, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { useTypingStore } from '@/stores/useTypingStore'
 import { storeToRefs } from 'pinia';
 
@@ -72,6 +81,19 @@ import { storeToRefs } from 'pinia';
 const { saveSettings, settings } = useTypingStore()
 const { isPhone } = storeToRefs(useTypingStore())
 
+// 计算属性：文本域
+const calcString = computed({
+  get() {
+    return settings.useDefaultWords ? settings.wordsString : settings.customString
+  },
+  set(value) {
+    if (settings.useDefaultWords) {
+      settings.wordsString = value
+    } else {
+      settings.customString = value
+    }
+  }
+})
 
 // 切分窗口中线位置
 const splitterModel = ref(isPhone.value ? 30 : 20)
@@ -193,5 +215,11 @@ function handleTextAreaResize() {
   &:not(.q-radio__inner--truthy) {
     color: $text
   }
+}
+
+// 次数统计
+.words-count {
+  opacity: .5;
+
 }
 </style>

@@ -49,7 +49,9 @@ export const useTypingStore = defineStore('typing', () => {
         // 词组总字符串，词组间用 | 分隔
         wordsString: '邮件|离开|准备|庆祝|宿舍|注意|非常|家庭|去年|点心|上课|美丽|德国|一定|着急|铅笔|痛苦|必须|病人|现在|牛奶|月亮|早上|简单|瓶子|哥哥|音乐|筷子|还是|桌子|看见|一边|大声|风景|餐厅|木头|新年|嘴巴|应该|过来|今天|真好|奥利奥|键盘|真实|优联|蓝牙|无线|三明治|胶条|星夜|奶油|熊猫|可乐|海外|矩阵|塑料|大骨|营地|无限|虚拟|电玩|徽章|北极圈|仁王|怪物|猎人|大佬|开车|代组|亚克力|黄铜|不锈钢|铝锭|注塑|菠萝|霓虹|螺丝|卫星轴|红白机|幻影|日文|俄文|键帽|套件|碳纤维|玻纤|热升华|头发|客厅|游泳池|周末|弟弟|可爱|鹦鹉|漂白|电泳|武士道|码农|脉冲|蒸汽波|青柠|声波|橄榄|前锋|深空|原点|樱花|原厂|静电容|抛光|佳达隆|宁芝|北极星|退烧|吃瓜|解毒|摸鱼|樱桃|树懒|模拟|激光|阳极|喷涂|便当|夜行者|锤头鲨|核子|涂改|神佑|注音|桃花|暗黑|海岸|巧克力|斯巴达|鬼魂|爆裂|绿洲|标本|巫妖|永恒|奶昔|河马|使命|召唤|黑色|行动|白色|牛头|个性|战神|现代|战争|凯华|精微科|空间|东方|山水|微光|西装|血缘|诅咒|钢板|打卡|签到|上班|双模|单模|划水|外卖|赞助|打赏|机械|开关|游戏|无敌|瞎眼|心态|照片|润滑|联机|配重|设计|装饰|铭牌|定制|独木舟|边牧|产品|鼠标|外设|交流|磨砂|透光|打字|玩具|品牌|工作室',
         // 默认生成词数
-        generateWordsNum: 20
+        generateWordsNum: 20,
+        // 自定义词组字符串
+        customString: ''
     })
 
     // 是否已有弹窗
@@ -57,11 +59,7 @@ export const useTypingStore = defineStore('typing', () => {
 
     // 根据内存中的设置设定设置的初始值
     if (localStorage.getItem('settings')) {
-        const localSettings = JSON.parse(localStorage.getItem('settings') as string)
-        if (localSettings.useDefaultWords) { 
-            localSettings.wordsString = settings.value.wordsString
-        }
-        settings.value = localSettings
+        settings.value = JSON.parse(localStorage.getItem('settings') as string)
     } else {
         // 如果内存中没有设置，将初始设置保存
         isNotificationShowing.value = true
@@ -80,8 +78,9 @@ export const useTypingStore = defineStore('typing', () => {
         }
         // 如果可用词块数量不足，则直接返回
         if (availableWords.length < amount) {
-            console.error("可用词块数不足")
-            return
+            console.error(`可用词块数不足${amount}个！当前最多生成${availableWords.length}个词块`)
+            amount = availableWords.length
+
         }
 
         // 清空现有的 words 数组
@@ -104,20 +103,32 @@ export const useTypingStore = defineStore('typing', () => {
     function saveSettings(setting: Settings) {
 
         // 获取词组
-        const wordsArr = setting.wordsString.split('|')
+        let wordsArr
+        if (setting.useDefaultWords) {
+            wordsArr = setting.wordsString.split('|')
+        } else {
+            wordsArr = setting.customString.split('|')
+        }
         // 去重
         const uniqueWords = [...new Set(wordsArr)]
+        // 去空
+        const resultArr = uniqueWords.filter(str => str.trim() !== '')
         // 转换成block对象
         const blocks = [] as Block[]
-        uniqueWords.forEach((cn: string) => {
+        resultArr.forEach((cn: string) => {
+            // 去除全部空格
+            cn = cn.replace(/\s/g, "")
             const en = pinyin(cn, { toneType: 'none', type: 'array', v: true }).join('')
             const block = { cn, en }
             blocks.push(block)
         })
+
         // 分别保存blocks和设置项
         localStorage.setItem('words', JSON.stringify(blocks))
         localStorage.setItem('settings', JSON.stringify(setting))
 
+        // 设置当前词组
+        allWords = JSON.parse(localStorage.getItem('words') as string)
 
         // 如果已经有弹窗在显示，则不再重复显示
         if (isNotificationShowing.value) {

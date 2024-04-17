@@ -132,7 +132,6 @@ onBeforeUnmount(() => {
 .num-chooser {
   align-self: flex-start;
   font-size: 1rem;
-  user-select: none;
 
   .num-chooser-num {
     cursor: pointer;
@@ -156,7 +155,6 @@ onBeforeUnmount(() => {
 
   width: 60vw;
   gap: 15px;
-  user-select: none;
 
   // 浮标
   .caret {
@@ -240,7 +238,6 @@ onBeforeUnmount(() => {
 
 /* 提示文字 */
 .tip {
-  user-select: none;
   opacity: .5;
   font-size: 12px;
   transition: 1s;

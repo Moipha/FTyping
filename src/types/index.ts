@@ -25,5 +25,7 @@ export interface Settings {
     // 词组总字符串，词组间用 | 分隔
     wordsString: string
     // 默认生成词数
-    generateWordsNum: number
+    generateWordsNum: number,
+    // 自定义词组字符串
+    customString: string
 }
