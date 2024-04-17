@@ -1,13 +1,13 @@
 <template>
-  <q-separator color="white" />
+  <q-separator color="text" />
 
-  <q-splitter :horizontal="isPhone" v-model="splitterModel" separator-style="background-color: white"
+  <q-splitter :horizontal="isPhone" v-model="splitterModel" separator-style="background-color: var(--q-text)"
     style="height: calc(100vh - 170px)">
     <!-- 左侧 -->
     <template v-slot:before>
       <div class="q-pa-md">
-        <q-tree :dense="isPhone" no-selection-unset text-color="white" color="white" :nodes="simple" node-key="label"
-          selected-color="amber" v-model:selected="selected" default-expand-all>
+        <q-tree :dense="isPhone" no-selection-unset text-color="text" color="text" :nodes="simple" node-key="label"
+          selected-color="active" v-model:selected="selected" default-expand-all>
           <template v-slot:default-header="prop">
             <div class="row items-center q-ma-xs">
               <q-icon :name="prop.node.icon || 'share'" :size="prop.node.iconSize" class="q-mr-sm" />
@@ -19,7 +19,7 @@
     </template>
     <!-- 分割线 -->
     <template v-slot:separator>
-      <q-avatar color="amber" text-color="black" size="40px" icon="drag_indicator" />
+      <q-avatar color="active" text-color="btnText" size="40px" icon="drag_indicator" />
     </template>
     <!-- 右侧 -->
     <template v-slot:after>
@@ -29,21 +29,21 @@
             <div class="text-h5 q-pl-sm">词组设置</div>
             <!-- 开关 -->
             <q-toggle @update:model-value="((b: boolean) => handleToggleChange(b))" class="q-mt-lg" size="50px"
-              color="amber" dark v-model="settings.useDefaultWords"><span
+              color="active" dark v-model="settings.useDefaultWords"><span
                 class="text-subtitle1 q-ml-sm">使用默认词组</span></q-toggle>
             <!-- 文本域 -->
-            <q-input :disable="settings.useDefaultWords" color="amber" input-class="words-input" class="q-mt-sm"
+            <q-input :disable="settings.useDefaultWords" color="active" input-class="words-input" class="q-mt-sm"
               v-model="settings.wordsString" autogrow outlined>
               <q-resize-observer @resize="handleTextAreaResize" />
             </q-input>
             <q-btn @click="saveSettings(settings)" :disable="settings.useDefaultWords" push class="float-right q-mt-sm"
-              size="16px" color="amber" text-color="black"><span class="q-px-md">保存</span></q-btn>
+              size="16px" color="active" text-color="btnText"><span class="q-px-md">保存</span></q-btn>
             <!-- 选项组 -->
             <div class="row q-mt-xl">
               <div class="row items-center text-subtitle1 q-ml-md" :class="isPhone ? 'col-12' : 'col-2'">默认生成词数</div>
               <div class="col">
                 <q-option-group @update:model-value="((num: number) => handleWordsNumChange(num))"
-                  v-model="settings.generateWordsNum" :options="options" color="amber" dark inline />
+                  v-model="settings.generateWordsNum" :options="options" color="active" dark inline />
               </div>
             </div>
 
@@ -60,7 +60,7 @@
       </q-tab-panels>
     </template>
   </q-splitter>
-  <q-separator color="white" />
+  <q-separator color="text" />
 </template>
 
 <script lang="ts" setup>
@@ -168,7 +168,7 @@ function handleTextAreaResize() {
 <style lang="scss">
 // 修改文本域样式
 .words-input {
-  color: white;
+  color: $text;
   font-size: 18px;
   line-height: 1.5 !important;
   padding: 10px 0 !important;
@@ -185,6 +185,13 @@ function handleTextAreaResize() {
 .q-tree__node--link {
   &:not(.q-tree__node--selected) {
     opacity: .8;
+  }
+}
+
+// 选型组
+.q-radio__inner {
+  &:not(.q-radio__inner--truthy) {
+    color: $text
   }
 }
 </style>

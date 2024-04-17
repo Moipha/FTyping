@@ -1,12 +1,12 @@
 <template>
     <div class="row q-pa-md justify-between">
-        <q-tabs v-model="tab" active-color="amber">
+        <q-tabs v-model="tab" active-color="active">
             <q-route-tab to="/time-keep" exact name="timeKeep" icon="alarm" label="计时" />
             <q-route-tab to="/time-limit" exact name="timeLimit" icon="notifications_none" label="限时" />
         </q-tabs>
         <div class="row items-center">
-            <q-fab color="amber" text-color="black" icon="menu" direction="left">
-                <q-fab-action to="/setting" color="amber" text-color="black" icon="settings" />
+            <q-fab color="active" text-color="btnText" icon="menu" direction="left">
+                <q-fab-action to="/setting" color="active" text-color="btnText" icon="settings" />
             </q-fab>
         </div>
     </div>

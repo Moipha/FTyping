@@ -37,9 +37,9 @@
           <div class="result-item">
             <div class="result-key row items-center">WPM
               <q-icon class="q-ml-xs cursor-pointer" name="info">
-                <q-tooltip transition-show="scale" transition-hide="scale" class="text-black bg-amber"
+                <q-tooltip transition-show="scale" transition-hide="scale" class="text-btnText bg-active"
                   anchor="top middle" self="bottom middle" :offset="[10, 10]">
-                  <em style="text-decoration: underline;font-size: 14px">Words Per Minute</em><br>
+                  <b><em style="text-decoration: underline;font-size: 14px">Words Per Minute</em></b><br>
                   <span style="font-size: 13px;">每分钟键入的单词数</span>
                 </q-tooltip>
               </q-icon>
@@ -68,10 +68,11 @@ import { onBeforeUnmount, onMounted, ref, watch, nextTick } from 'vue'
 import useCaret from '@/hooks/useCaret'
 import useTyping from '@/hooks/useTyping'
 import useProcess from '@/hooks/useProcess'
+import useTheme from '@/hooks/useTheme'
 import { useTypingStore } from '@/stores/useTypingStore'
 import type { TypingResult } from '@/types'
 import { storeToRefs } from 'pinia'
-
+useTheme()
 
 /* store中的数据 */
 const { words, caret, blocksContainer, startTime } = storeToRefs(useTypingStore())
@@ -100,7 +101,6 @@ function chooseNum(num: number) {
     restart(curNum.value)
   }
 }
-
 
 /* 生命周期 */
 
@@ -164,7 +164,7 @@ onBeforeUnmount(() => {
     position: absolute;
     width: 3px;
     height: 28px;
-    background-color: $active-color;
+    background-color: $active;
     border-radius: 10px;
     transition: .2s ease-out;
   }
@@ -248,9 +248,9 @@ onBeforeUnmount(() => {
 
   .q-btn {
     border-radius: 4px;
-    color: black;
+    color: $btnText;
     font-size: 10px;
-    background-color: white;
+    background-color: $text;
     margin: 0 3px;
   }
 

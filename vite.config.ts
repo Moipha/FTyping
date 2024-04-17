@@ -8,7 +8,7 @@ export default defineConfig({
   // server: {
   //   port: 80
   // },
-  base: '/f-typing/',
+  // base: '/f-typing/',
   build: {
     outDir: 'docs'
   },
@@ -25,7 +25,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: '@import "@/assets/variables.scss";'
+        additionalData: '@import "@/assets/customVariables.scss";'
       }
     }
   }

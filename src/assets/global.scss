@@ -1,13 +1,14 @@
 @import './animation.scss';
 
+
 * {
     margin: 0;
     padding: 0;
 }
 
 body {
-    background-color: #282c34;
-    color: whitesmoke;
+    background-color: $bg;
+    color: $text;
 }
 
 .hide {
@@ -19,20 +20,20 @@ body {
 }
 
 .wrong {
-    color: $alert-color;
+    color: $error;
     opacity: 1 !important;
 }
 
 .correct {
-    color: $active-color;
+    color: $active;
     opacity: 1 !important;
 }
 
 .skip {
-    color: $alert-color;
+    color: $error;
 }
 
-.transport{
+.transport {
     opacity: 0 !important;
 }
 
@@ -43,19 +44,57 @@ body {
 }
 
 /* 滚动条轨道背景 */
-::-webkit-scrollbar-track {
-    background: darken($active-color, 30%);
-}
+// ::-webkit-scrollbar-track {}
 
 /* 滚动条thumb（拖动条） */
 ::-webkit-scrollbar-thumb {
-    background: $active-color;
+    background: $active;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
 /* 滚动条thumb hover状态 */
-::-webkit-scrollbar-thumb:hover {
-    background: darken($active-color, 10%);
+// ::-webkit-scrollbar-thumb:hover {}
+
+
+// 添加至quasar的brandColor
+.text-active {
+    color: $active !important;
+}
+
+.bg-active {
+    background: $active !important;
+}
+
+.text-error {
+    color: $error !important;
+}
+
+.bg-error {
+    background: $error !important;
+}
+
+.text-bg {
+    color: $bg !important;
+}
+
+.bg-bg {
+    background: $bg !important;
+}
+
+.text-btnText {
+    color: $btnText !important;
+}
+
+.bg-btnText {
+    background: $btnText !important;
+}
+
+.text-text {
+    color: $text !important;
+}
+
+.bg-text {
+    background: $text !important;
 }

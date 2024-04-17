@@ -3,9 +3,22 @@ import { ref } from 'vue'
 
 import { pinyin } from 'pinyin-pro'
 import type { Block, Settings } from '@/types'
-import { useQuasar } from 'quasar'
+import { useQuasar, Platform } from 'quasar'
 
 export const useTypingStore = defineStore('typing', () => {
+
+    // 获取quasar内置插件
+    const $q = useQuasar()
+
+    if (Platform.is.mobile) {
+        $q.notify({
+            type: 'negative',
+            message: '请使用PC端进行访问',
+            position: 'center',
+            timeout: Infinity
+        })
+    }
+
     // 判断是否是竖屏模式
     const mediaQuery = window.matchMedia('(max-width: 500px)')
     const isPhone = ref<boolean>(mediaQuery.matches)
@@ -17,8 +30,7 @@ export const useTypingStore = defineStore('typing', () => {
     mediaQuery.addEventListener('change', handleMediaQueryChange)
 
 
-    // 获取quasar内置插件
-    const $q = useQuasar()
+
     // 计时：开始时间
     const startTime = ref<number | null>(null)
     // 获取设置的全部词块
@@ -45,7 +57,11 @@ export const useTypingStore = defineStore('typing', () => {
 
     // 根据内存中的设置设定设置的初始值
     if (localStorage.getItem('settings')) {
-        settings.value = JSON.parse(localStorage.getItem('settings') as string)
+        const localSettings = JSON.parse(localStorage.getItem('settings') as string)
+        if (localSettings.useDefaultWords) { 
+            localSettings.wordsString = settings.value.wordsString
+        }
+        settings.value = localSettings
     } else {
         // 如果内存中没有设置，将初始设置保存
         isNotificationShowing.value = true
