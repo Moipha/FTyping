@@ -42,14 +42,14 @@ export const useTypingStore = defineStore('typing', () => {
     const words = ref<{ cn: string, en: string }[]>([])
     const enWords = ref<Block[]>([])
 
-    // 配置项
+    // 默认配置项
     const settings = ref<Settings>({
         // 是否使用默认词组
         useDefaultWords: true,
         // 词组总字符串，词组间用 | 分隔
-        wordsString: '邮件|离开|准备|庆祝|宿舍|注意|非常|家庭|去年|点心|上课|美丽|德国|一定|着急|铅笔|痛苦|必须|病人|现在|牛奶|月亮|早上|简单|瓶子|哥哥|音乐|筷子|还是|桌子|看见|一边|大声|风景|餐厅|木头|新年|嘴巴|应该|过来|今天|真好|奥利奥|键盘|真实|优联|蓝牙|无线|三明治|胶条|星夜|奶油|熊猫|可乐|海外|矩阵|塑料|大骨|营地|无限|虚拟|电玩|徽章|北极圈|仁王|怪物|猎人|大佬|开车|代组|亚克力|黄铜|不锈钢|铝锭|注塑|菠萝|霓虹|螺丝|卫星轴|红白机|幻影|日文|俄文|键帽|套件|碳纤维|玻纤|热升华|头发|客厅|游泳池|周末|弟弟|可爱|鹦鹉|漂白|电泳|武士道|码农|脉冲|蒸汽波|青柠|声波|橄榄|前锋|深空|原点|樱花|原厂|静电容|抛光|佳达隆|宁芝|北极星|退烧|吃瓜|解毒|摸鱼|樱桃|树懒|模拟|激光|阳极|喷涂|便当|夜行者|锤头鲨|核子|涂改|神佑|注音|桃花|暗黑|海岸|巧克力|斯巴达|鬼魂|爆裂|绿洲|标本|巫妖|永恒|奶昔|河马|使命|召唤|黑色|行动|白色|牛头|个性|战神|现代|战争|凯华|精微科|空间|东方|山水|微光|西装|血缘|诅咒|钢板|打卡|签到|上班|双模|单模|划水|外卖|赞助|打赏|机械|开关|游戏|无敌|瞎眼|心态|照片|润滑|联机|配重|设计|装饰|铭牌|定制|独木舟|边牧|产品|鼠标|外设|交流|磨砂|透光|打字|玩具|品牌|工作室',
+        wordsString: '你好|世界|测试|信息|发展|趋势|互联网|核心|边缘|计算机|网络|性能|指标|体系|结构|分组|交换|概念|协议|服务|抽象|具体|掌握|数字化|迅速|完善|影响|电信|有线|分工|内容|技术|文件|数据|存储|变革|领域|委员会|因特网|科研|特征|冗长|控制|资料|局部|范围|简介|原理|视频|社交|邮件|照片|信函|业务|购买|方便|经济|实惠|传统|购物|方式|操作|智能|范围|应用|共享|连通性|终端|缴纳|昂贵|地点|软件|服务器|文档|读取|下载|无偿|有偿|瘫痪|工作|生活|学习|交往|停顿|交易|检索|依赖|可靠性|生产力|通信量|负面|病毒|犯罪|机密|盗窃|沉溺|积极|主流|欺诈|初步|了解',
         // 默认生成词数
-        generateWordsNum: 20,
+        generateWordsNum: 30,
         // 自定义词组字符串
         customString: ''
     })
@@ -122,6 +122,10 @@ export const useTypingStore = defineStore('typing', () => {
             const block = { cn, en }
             blocks.push(block)
         })
+        if (blocks.length == 0) {
+            showNotify(false)
+            return
+        }
 
         // 分别保存blocks和设置项
         localStorage.setItem('words', JSON.stringify(blocks))
@@ -130,28 +134,7 @@ export const useTypingStore = defineStore('typing', () => {
         // 设置当前词组
         allWords = JSON.parse(localStorage.getItem('words') as string)
 
-        // 如果已经有弹窗在显示，则不再重复显示
-        if (isNotificationShowing.value) {
-            return
-        }
-        // 显示弹窗
-        isNotificationShowing.value = true;
-        const notif = $q.notify({
-            type: 'ongoing',
-            message: '更新设置中...',
-            position: isPhone.value ? 'bottom' : 'bottom-right',
-            onDismiss: () => {
-                isNotificationShowing.value = false; // 弹窗关闭时更新状态
-            }
-        })
-        // 延迟关闭弹窗
-        setTimeout(() => {
-            notif({
-                type: 'positive',
-                message: '已保存当前设置',
-                timeout: 1000,
-            })
-        }, 2000)
+        showNotify(true)
     }
 
     /* 节点 */
@@ -174,6 +157,41 @@ export const useTypingStore = defineStore('typing', () => {
                 blockRefs.value.push(blockRef)
             }
         }
+    }
+    // 操作弹窗
+    function showNotify(b: boolean) {
+        // 如果已经有弹窗在显示，则不再重复显示
+        if (isNotificationShowing.value) {
+            return
+        }
+        // 显示弹窗
+        isNotificationShowing.value = true
+        const notif = $q.notify({
+            type: 'ongoing',
+            message: '更新设置中...',
+            position: isPhone.value ? 'bottom' : 'bottom-right',
+            onDismiss: () => {
+                isNotificationShowing.value = false; // 弹窗关闭时更新状态
+            }
+        })
+        // 延迟关闭弹窗
+        setTimeout(() => {
+            if (b) {
+                notif({
+                    type: 'positive',
+                    message: '已保存当前设置',
+                    timeout: 1000,
+                })
+            } else {
+                // 有错误的
+                notif({
+                    type: 'negative',
+                    message: '设置保存失败！请至少添加一个自定义词组',
+                    timeout: 5000,
+                })
+            }
+
+        }, 1500)
     }
 
 

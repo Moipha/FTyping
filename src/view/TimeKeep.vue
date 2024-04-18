@@ -22,12 +22,9 @@
       <q-btn @keydown.space.prevent="restart(curNum)" @click="restart(curNum)" class="re-btn" padding="xl"
         icon="refresh" size="lg" unelevated />
       <div :class="startTime ? 'transport' : ''" class="tip column q-mt-xl items-center">
-        <span>点击任意词块开始输入</span>
-        <span>按<q-btn padding="0px 3px" push label="Space" />可以进入下一个词块</span>
-        <span>输入状态<q-btn padding="0px 3px" push label="Tab" />后按下<q-btn padding="0px 3px" push
-            label="Space" />可以重来</span>
-        <span>从右上角进入设置 可以对样式和功能进行定制</span>
-        <span>我们将于该提示隐藏时开始计时</span>
+        <span>点击词块开始输入</span>
+        <span>按<q-btn padding="0px 3px" push label="Space" />进入下一个词块</span>
+        <span><q-btn padding="0px 3px" push label="Tab" /> + <q-btn padding="0px 3px" push label="Space" />可以重来</span>
         <span>祝玩得开心 : )</span>
       </div>
     </div>
@@ -68,11 +65,9 @@ import { onBeforeUnmount, onMounted, ref, watch, nextTick } from 'vue'
 import useCaret from '@/hooks/useCaret'
 import useTyping from '@/hooks/useTyping'
 import useProcess from '@/hooks/useProcess'
-import useTheme from '@/hooks/useTheme'
 import { useTypingStore } from '@/stores/useTypingStore'
 import type { TypingResult } from '@/types'
 import { storeToRefs } from 'pinia'
-useTheme()
 
 /* store中的数据 */
 const { words, caret, blocksContainer, startTime } = storeToRefs(useTypingStore())
@@ -179,7 +174,7 @@ onBeforeUnmount(() => {
         transition: 0.2s;
         font-family: 'Consolas';
         margin: 0 0.5px;
-        font-size: 23px;
+        font-size: 22px;
         opacity: .5;
       }
     }
@@ -245,7 +240,7 @@ onBeforeUnmount(() => {
 
   .q-btn {
     border-radius: 4px;
-    color: $btnText;
+    color: $bg;
     font-size: 10px;
     background-color: $text;
     margin: 0 3px;

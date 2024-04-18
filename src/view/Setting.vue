@@ -31,18 +31,19 @@
             <div class="row items-center q-mt-xl">
               <q-toggle @update:model-value="((b: boolean) => handleToggleChange(b))" size="50px" color="active" dark
                 v-model="settings.useDefaultWords"><span class="text-subtitle1">使用默认词组</span></q-toggle>
-              <q-icon size="20px" color="info" class="q-ml-xs cursor-pointer" name="info">
+              <q-icon size="20px" color="active" class="q-ml-xs cursor-pointer" name="info">
                 <q-tooltip transition-show="scale" transition-hide="scale" class="text-btnText bg-active"
                   anchor="top middle" self="bottom middle" :offset="[10, 10]">
                   <b style="font-size: 13px">设置词组时注意词组间用 | 分隔；</b><br>
                   <b style="font-size: 13px">在保存时会自动忽略重复词组</b>
                 </q-tooltip>
               </q-icon>
-              <span class="words-count q-ml-lg">共{{ [...new Set(calcString.split('|'))].filter(str => str.trim() !== '').length }}词</span>
+              <span class="words-count q-ml-lg">共{{ [...new Set(calcString.split('|'))].filter(str => str.trim() !==
+                '').length }}词</span>
             </div>
             <!-- 文本域 -->
-            <q-input :disable="settings.useDefaultWords" color="active" input-class="words-input" class="q-mt-sm"
-              v-model="calcString" autogrow outlined>
+            <q-input placeholder="请在此处输入自定义词组..." :disable="settings.useDefaultWords" color="active"
+              input-class="words-input" class="q-mt-sm" v-model="calcString" autogrow outlined>
               <q-resize-observer @resize="handleTextAreaResize" />
             </q-input>
             <q-btn @click="saveSettings(settings)" :disable="settings.useDefaultWords" push class="float-right q-mt-sm"
@@ -64,7 +65,14 @@
         </q-tab-panel>
 
         <q-tab-panel name="主题">
-          主题设置
+          <div class="q-px-lg q-py-sm row justify-evenly">
+            <q-card>
+              quasar
+            </q-card>
+            <q-card>
+              amber
+            </q-card>
+          </div>
         </q-tab-panel>
       </q-tab-panels>
     </template>
@@ -75,11 +83,15 @@
 <script lang="ts" setup>
 import { computed, nextTick, ref } from 'vue'
 import { useTypingStore } from '@/stores/useTypingStore'
-import { storeToRefs } from 'pinia';
+import { storeToRefs } from 'pinia'
+import useTheme from '@/hooks/useTheme'
 
 // 获取store中的数据
 const { saveSettings, settings } = useTypingStore()
 const { isPhone } = storeToRefs(useTypingStore())
+
+// 获取设置主题的方法
+const { changeTheme } = useTheme()
 
 // 计算属性：文本域
 const calcString = computed({
@@ -221,5 +233,18 @@ function handleTextAreaResize() {
 .words-count {
   opacity: .5;
 
+}
+
+// 主题卡片
+.q-card{
+  width: 300px;
+  height: 200px;
+  background-color: $bg;
+  color: $text;
+  text-align: center;
+  line-height: 200px;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 20px 0;
 }
 </style>

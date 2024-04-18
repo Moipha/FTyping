@@ -10,6 +10,7 @@
 body {
     background-color: $bg;
     color: $text;
+    transition: background 0.2s, color 0.2s;
 }
 
 .hide {

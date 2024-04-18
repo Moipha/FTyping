@@ -29,3 +29,12 @@ export interface Settings {
     // 自定义词组字符串
     customString: string
 }
+
+// 主题对象
+export interface Theme {
+    active: string
+    error: string
+    bg: string
+    text: string
+    btnText: string
+}
