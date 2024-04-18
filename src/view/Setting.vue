@@ -65,13 +65,25 @@
         </q-tab-panel>
 
         <q-tab-panel name="主题">
-          <div class="q-px-lg q-py-sm row justify-evenly">
-            <q-card>
-              quasar
+          <div class="q-px-lg q-py-sm row justify-start q-gutter-lg">
+            <q-card @click="changeTheme(key as string)" flat v-for="(value, key) in themes" :key="key">
+              <div class="card-inner">
+                <!-- 正面 -->
+                <div class="front shadow-5" :style='`background-color: ${value.bg};color: ${value.active}`'>
+                  {{ key }}
+                </div>
+                <!-- 背面 -->
+                <div class="back shadow-5 column justify-center"
+                  :style='`background: linear-gradient(to bottom right ,${value.bg}, ${value.active})`'>
+                  <div class="row items-center q-px-xl" v-for="(v, k) in value" :style='`color: ${v}`'>
+                    <div class="color-square" :style='`background-color: ${v}`'></div>
+                    <div class="color-key q-ml-md">{{ k }} : </div>
+                    <div class="color-value">{{ v }}</div>
+                  </div>
+                </div>
+              </div>
             </q-card>
-            <q-card>
-              amber
-            </q-card>
+
           </div>
         </q-tab-panel>
       </q-tab-panels>
@@ -90,8 +102,8 @@ import useTheme from '@/hooks/useTheme'
 const { saveSettings, settings } = useTypingStore()
 const { isPhone } = storeToRefs(useTypingStore())
 
-// 获取设置主题的方法
-const { changeTheme } = useTheme()
+// 获取主题数据
+const { changeTheme, themes } = useTheme()
 
 // 计算属性：文本域
 const calcString = computed({
@@ -110,7 +122,7 @@ const calcString = computed({
 // 切分窗口中线位置
 const splitterModel = ref(isPhone.value ? 30 : 20)
 // 默认选中
-const selected = ref('计时模式')
+const selected = ref('主题')
 
 
 // 树状选项
@@ -235,16 +247,62 @@ function handleTextAreaResize() {
 
 }
 
-// 主题卡片
-.q-card{
+// 主题卡片容器
+.q-card {
   width: 300px;
   height: 200px;
+  perspective: 1000px; // 为了实现3D效果，添加透视
   background-color: $bg;
-  color: $text;
-  text-align: center;
-  line-height: 200px;
-  font-size: 20px;
   cursor: pointer;
-  margin: 20px 0;
+
+  // 卡片内部元素
+  .card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d; // 保持3D变换
+    transition: transform 0.8s ease;
+
+    // 正反样式
+    .front,
+    .back {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      backface-visibility: hidden; // 防止从背面看到正面
+      border-radius: 10px;
+    }
+
+    // 正面
+    .front {
+      line-height: 200px;
+      font-size: 25px;
+      text-align: center;
+    }
+
+    // 背面
+    .back {
+      transform: rotateY(180deg); // 初始时背面朝上
+      font-size: 18px;
+      text-align: center;
+      font-weight: bold;
+
+      .color-square {
+        height: 18px;
+        width: 18px;
+        border-radius: 5px;
+      }
+
+      .color-value{
+        text-decoration: underline;
+        margin-left: auto;
+      }
+    }
+  }
+
+  // 鼠标悬停时翻转
+  &:hover .card-inner {
+    transform: rotateY(180deg);
+  }
 }
 </style>

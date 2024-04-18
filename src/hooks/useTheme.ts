@@ -10,18 +10,18 @@ export default function () {
         quasar: {
             active: '#1976d2',
             error: '#c10015',
-            bg: '#1d1d1d',
             text: 'white',
-            btnText: 'white'
+            btnText: 'white',
+            bg: '#1d1d1d'
         },
 
         // amber配色
         amber: {
             active: '#ffc107',
             error: '#c10015',
-            bg: '#282c34',
+            text: 'whitesmoke',
             btnText: 'black',
-            text: 'whitesmoke'
+            bg: '#282c34'
         }
     }
 
@@ -41,5 +41,5 @@ export default function () {
         localStorage.setItem('theme', JSON.stringify(theme))
     }
 
-    return { changeTheme }
+    return { changeTheme, themes}
 }
