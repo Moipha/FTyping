@@ -24,7 +24,7 @@
       <div :class="startTime ? 'transport' : ''" class="tip column q-mt-xl items-center">
         <span>点击词块开始输入</span>
         <span>按<q-btn padding="0px 3px" push label="Space" />进入下一个词块</span>
-        <span><q-btn padding="0px 3px" push label="Tab" /> + <q-btn padding="0px 3px" push label="Space" />可以重来</span>
+        <span><q-btn padding="0px 3px" push label="Tab" /> + <q-btn padding="0px 3px" push label="Space" />可以快速刷新</span>
         <span>祝玩得开心 : )</span>
       </div>
     </div>

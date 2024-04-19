@@ -69,13 +69,18 @@
             <q-card @click="changeTheme(key as string)" flat v-for="(value, key) in themes" :key="key">
               <div class="card-inner">
                 <!-- 正面 -->
-                <div class="front shadow-5" :style='`background-color: ${value.bg};color: ${value.active}`'>
+                <div class="front shadow-5" :style='`background-color: ${value.color.bg};color: ${value.color.active}`'>
                   {{ key }}
                 </div>
                 <!-- 背面 -->
                 <div class="back shadow-5 column justify-center"
-                  :style='`background: linear-gradient(to bottom right ,${value.bg}, ${value.active})`'>
-                  <div class="row items-center q-px-xl" v-for="(v, k) in value" :style='`color: ${v}`'>
+                  :style='`background: linear-gradient(to bottom right ,${value.color.bg}, ${value.color.active})`'>
+                  <!-- 主题描述 -->
+                  <div class="q-mb-sm"
+                    :style='`color: ${value.color.active};text-shadow:  -1px -1px 0 ${value.color.bg},  1px -1px 0 ${value.color.bg},-1px  1px 0 ${value.color.bg}, 1px  1px 0 ${value.color.bg}; `'>
+                    {{ value.desc }}</div>
+                  <!-- 颜色列表 -->
+                  <div class="row items-center q-px-xl" v-for="(v, k) in value.color" :style='`color: ${v}`'>
                     <div class="color-square" :style='`background-color: ${v}`'></div>
                     <div class="color-key q-ml-md">{{ k }} : </div>
                     <div class="color-value">{{ v }}</div>
@@ -252,7 +257,7 @@ function handleTextAreaResize() {
   width: 300px;
   height: 200px;
   perspective: 1000px; // 为了实现3D效果，添加透视
-  background-color: $bg;
+  background-color: transparent;
   cursor: pointer;
 
   // 卡片内部元素
@@ -293,16 +298,18 @@ function handleTextAreaResize() {
         border-radius: 5px;
       }
 
-      .color-value{
+      .color-value {
         text-decoration: underline;
         margin-left: auto;
       }
+
     }
   }
 
   // 鼠标悬停时翻转
   &:hover .card-inner {
     transform: rotateY(180deg);
+    transition-delay: .5s;
   }
 }
 </style>

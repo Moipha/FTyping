@@ -32,9 +32,12 @@ export interface Settings {
 
 // 主题对象
 export interface Theme {
-    active: string
-    error: string
-    bg: string
-    text: string
-    btnText: string
+    desc: string
+    color: {
+        active: string
+        error: string
+        bg: string
+        text: string
+        btnText: string
+    }
 }
