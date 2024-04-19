@@ -4,8 +4,7 @@ import { Notify } from 'quasar'
 // To be used on app.use(Quasar, { ... })
 
 // 获取本地内存中的主题
-localStorage.getItem('theme')
-const theme = localStorage.getItem('theme') ? JSON.parse(localStorage.getItem('theme') as string) : {
+const theme = localStorage.getItem('theme') ? JSON.parse(localStorage.getItem('theme') as string).color : {
   active: '#ffc107',
   error: '#c10015',
   bg: '#282c34',

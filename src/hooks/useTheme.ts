@@ -1,7 +1,17 @@
 import type { Theme } from "@/types"
 import { getCssVar, setCssVar } from "quasar"
+import { ref } from "vue"
 
 export default function () {
+    // 当前主题
+    const current = ref('amber')
+
+    // 获取当前主题
+    localStorage.getItem('theme')
+    const theme = localStorage.getItem('theme') ? JSON.parse(localStorage.getItem('theme') as string) : null
+    if (theme) {
+        current.value = theme.name
+    }
 
     // 可选的主题
     const themes: { [key: string]: Theme } = {
@@ -124,10 +134,6 @@ export default function () {
         }
 
 
-
-
-
-
     }
 
     // 切换至指定主题
@@ -142,9 +148,14 @@ export default function () {
         Object.entries(theme.color).forEach(([key, value]) => {
             setCssVar(key as keyof Theme, value)
         })
+        // 修改当前主题名
+        current.value = themeName
+        // 将主题名一起保存
+        const save = { ...theme, name: themeName }
         // 保存至本地内存
-        localStorage.setItem('theme', JSON.stringify(theme.color))
+        localStorage.setItem('theme', JSON.stringify(save))
+
     }
 
-    return { changeTheme, themes }
+    return { changeTheme, themes, current }
 }

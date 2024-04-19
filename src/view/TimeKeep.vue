@@ -22,10 +22,10 @@
       <q-btn @keydown.space.prevent="restart(curNum)" @click="restart(curNum)" class="re-btn" padding="xl"
         icon="refresh" size="lg" unelevated />
       <div :class="startTime ? 'transport' : ''" class="tip column q-mt-xl items-center">
-        <span>点击词块开始输入</span>
+        <span>点击词块即可开始输入</span>
         <span>按<q-btn padding="0px 3px" push label="Space" />进入下一个词块</span>
-        <span><q-btn padding="0px 3px" push label="Tab" /> + <q-btn padding="0px 3px" push label="Space" />可以快速刷新</span>
-        <span>祝玩得开心 : )</span>
+        <span>输入第一个字母后开始计时</span>
+        <span><q-btn padding="0px 3px" push label="Tab" />+<q-btn padding="0px 3px" push label="Space" />可以快速刷新</span>
       </div>
     </div>
     <Transition name="result">
@@ -33,7 +33,7 @@
         <div class="row justify-around result-item-container">
           <div class="result-item">
             <div class="result-key row items-center">WPM
-              <q-icon class="q-ml-xs cursor-pointer" name="info">
+              <q-icon color="text" class="q-ml-xs cursor-pointer" name="info">
                 <q-tooltip transition-show="scale" transition-hide="scale" class="text-btnText bg-active"
                   anchor="top middle" self="bottom middle" :offset="[10, 10]">
                   <b><em style="text-decoration: underline;font-size: 14px">Words Per Minute</em></b><br>
@@ -246,6 +246,6 @@ onBeforeUnmount(() => {
     margin: 0 3px;
   }
 
-  animation: fade-in 1s ease-in-out;
+  animation: fade-in 1s ease;
 }
 </style>

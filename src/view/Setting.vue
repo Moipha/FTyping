@@ -30,8 +30,8 @@
             <!-- 开关 -->
             <div class="row items-center q-mt-xl">
               <q-toggle @update:model-value="((b: boolean) => handleToggleChange(b))" size="50px" color="active" dark
-                v-model="settings.useDefaultWords"><span class="text-subtitle1">使用默认词组</span></q-toggle>
-              <q-icon size="20px" color="active" class="q-ml-xs cursor-pointer" name="info">
+                keep-color v-model="settings.useDefaultWords"><span class="text-subtitle1">使用默认词组</span></q-toggle>
+              <q-icon size="20px" color="text" class="q-ml-xs cursor-pointer" name="info">
                 <q-tooltip transition-show="scale" transition-hide="scale" class="text-btnText bg-active"
                   anchor="top middle" self="bottom middle" :offset="[10, 10]">
                   <b style="font-size: 13px">设置词组时注意词组间用 | 分隔；</b><br>
@@ -71,13 +71,16 @@
                 <!-- 正面 -->
                 <div class="front shadow-5" :style='`background-color: ${value.color.bg};color: ${value.color.active}`'>
                   {{ key }}
+                  <div v-if="current == key" class="icon-container">
+                    <q-icon name="check_circle_outline" size="3rem" class="q-ma-sm"></q-icon>
+                  </div>
                 </div>
                 <!-- 背面 -->
                 <div class="back shadow-5 column justify-center"
                   :style='`background: linear-gradient(to bottom right ,${value.color.bg}, ${value.color.active})`'>
                   <!-- 主题描述 -->
                   <div class="q-mb-sm"
-                    :style='`color: ${value.color.active};text-shadow:  -1px -1px 0 ${value.color.bg},  1px -1px 0 ${value.color.bg},-1px  1px 0 ${value.color.bg}, 1px  1px 0 ${value.color.bg}; `'>
+                    :style='`color: ${value.color.active};text-shadow:  -1px -1px 0 ${value.color.btnText},  1px -1px 0 ${value.color.btnText},-1px  1px 0 ${value.color.btnText}, 1px  1px 0 ${value.color.btnText}; `'>
                     {{ value.desc }}</div>
                   <!-- 颜色列表 -->
                   <div class="row items-center q-px-xl" v-for="(v, k) in value.color" :style='`color: ${v}`'>
@@ -108,7 +111,7 @@ const { saveSettings, settings } = useTypingStore()
 const { isPhone } = storeToRefs(useTypingStore())
 
 // 获取主题数据
-const { changeTheme, themes } = useTheme()
+const { changeTheme, themes, current } = useTheme()
 
 // 计算属性：文本域
 const calcString = computed({
@@ -127,7 +130,7 @@ const calcString = computed({
 // 切分窗口中线位置
 const splitterModel = ref(isPhone.value ? 30 : 20)
 // 默认选中
-const selected = ref('主题')
+const selected = ref('计时模式')
 
 
 // 树状选项
@@ -239,6 +242,15 @@ function handleTextAreaResize() {
   }
 }
 
+// 开关
+.q-toggle__inner--falsy {
+  .q-toggle__thumb {
+    &::after {
+      border: solid 1px;
+    }
+  }
+}
+
 // 选型组
 .q-radio__inner {
   &:not(.q-radio__inner--truthy) {
@@ -266,7 +278,7 @@ function handleTextAreaResize() {
     height: 100%;
     position: relative;
     transform-style: preserve-3d; // 保持3D变换
-    transition: transform 0.8s ease;
+    transition: transform 0.8s ease-in-out;
 
     // 正反样式
     .front,
@@ -283,6 +295,16 @@ function handleTextAreaResize() {
       line-height: 200px;
       font-size: 25px;
       text-align: center;
+
+      .icon-container {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+
+        .q-icon {
+          float: inline-end;
+        }
+      }
     }
 
     // 背面
