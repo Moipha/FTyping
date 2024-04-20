@@ -46,9 +46,9 @@ export const useSettingStore = defineStore('setting', () => {
     const isNotificationShowing = ref(false)
 
     // 获取设置的全部词块
-    let allWords: null | Block = null
+    let allWords = ref<null | Block>(null)
     if (localStorage.getItem('words')) {
-        allWords = JSON.parse(localStorage.getItem('words') as string)
+        allWords.value = JSON.parse(localStorage.getItem('words') as string)
     }
 
     // 根据内存中的设置设定设置的初始值
@@ -58,7 +58,7 @@ export const useSettingStore = defineStore('setting', () => {
         // 如果内存中没有设置，将初始设置保存
         isNotificationShowing.value = true
         saveSettings(settings.value)
-        allWords = JSON.parse(localStorage.getItem('words') as string)
+        allWords.value = JSON.parse(localStorage.getItem('words') as string)
         isNotificationShowing.value = false
     }
 
@@ -96,7 +96,7 @@ export const useSettingStore = defineStore('setting', () => {
         localStorage.setItem('settings', JSON.stringify(setting))
 
         // 设置当前词组
-        allWords = JSON.parse(localStorage.getItem('words') as string)
+        allWords.value = JSON.parse(localStorage.getItem('words') as string)
 
         showNotify(true)
     }
@@ -137,5 +137,5 @@ export const useSettingStore = defineStore('setting', () => {
         }, 1500)
     }
 
-    return {allWords, isPhone, settings, saveSettings}
+    return { allWords, isPhone, settings, saveSettings }
 })

@@ -1,27 +1,27 @@
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { ref } from 'vue'
 
-import type { Block } from '@/types'
+import type { Block, Word } from '@/types'
 import { useSettingStore } from './useSettingStore'
 
 export const useTypingStore = defineStore('typing', () => {
 
     // 引入setting中的数据
-    const { allWords } = useSettingStore()
+    const { allWords } = storeToRefs(useSettingStore())
 
     // 计时：开始时间
     const startTime = ref<number | null>(null)
 
 
     // 词块
-    const words = ref<{ cn: string, en: string }[]>([])
+    const words = ref<Word[]>([])
     const enWords = ref<Block[]>([])
 
 
     // 生成指定数量的随机词块
     function generateWords(amount: number) {
         // 浅拷贝，以避免直接修改allWords
-        const availableWords = JSON.parse(JSON.stringify(allWords))
+        const availableWords = JSON.parse(JSON.stringify(allWords.value))
 
         if (!availableWords) {
             console.error('当前无词块')

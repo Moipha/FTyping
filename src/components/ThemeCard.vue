@@ -102,7 +102,7 @@ defineProps(['themeKey', 'value', 'current', 'changeTheme'])
     // 鼠标悬停时翻转
     &:hover .card-inner {
         transform: rotateY(180deg);
-        transition-delay: .5s;
+        transition-delay: .4s;
     }
 
     &:hover {

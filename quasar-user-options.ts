@@ -13,7 +13,7 @@ const theme = localStorage.getItem('theme') ? JSON.parse(localStorage.getItem('t
 }
 export default {
   config: {
-    // 默认主题
+    // 主题
     brand: theme
   },
   plugins: {
