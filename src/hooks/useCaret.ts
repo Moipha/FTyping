@@ -6,7 +6,7 @@ export default function (
     curIndex: Ref<[number, number]>
 ) {
     // 获取store中的数据
-    const { blockRefs, caret, blocksContainer } = storeToRefs(useTypingStore())
+    const { blockRefs, caret } = storeToRefs(useTypingStore())
 
 
     // 处理键盘事件
@@ -39,7 +39,6 @@ export default function (
         }
         // 定位至对应字母左方。如果已在最后一个字母左方，定位至其右方
         const positionTargetCode = codeElements[n] as HTMLElement || codeElements[n - 1] as HTMLElement
-        n != codeElements.length
         moveCaret(positionTargetCode, n != codeElements.length)
     }
 

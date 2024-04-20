@@ -68,11 +68,12 @@ import useProcess from '@/hooks/useProcess'
 import { useTypingStore } from '@/stores/useTypingStore'
 import type { TypingResult } from '@/types'
 import { storeToRefs } from 'pinia'
+import { useSettingStore } from '@/stores/useSettingStore'
 
 /* store中的数据 */
 const { words, caret, blocksContainer, startTime } = storeToRefs(useTypingStore())
-const { setBlockRef, settings } = useTypingStore()
-
+const { setBlockRef } = useTypingStore()
+const { settings } = useSettingStore()
 
 /* 数据 */
 const showResult = ref(false)   // 结果是否显示

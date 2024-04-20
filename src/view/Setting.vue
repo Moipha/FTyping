@@ -5,7 +5,7 @@
     style="height: calc(100vh - 170px)">
     <!-- 左侧 -->
     <template v-slot:before>
-      <div class="q-pa-md">
+      <div class="q-pa-md setting-tree">
         <q-tree :dense="isPhone" no-selection-unset text-color="text" color="text" :nodes="simple" node-key="label"
           selected-color="active" v-model:selected="selected" default-expand-all>
           <template v-slot:default-header="prop">
@@ -25,7 +25,7 @@
     <template v-slot:after>
       <q-tab-panels class="q-pa-sm" v-model="selected" animated transition-prev="slide-down" transition-next="slide-up">
         <q-tab-panel name="计时模式">
-          <div class="q-px-lg q-py-sm">
+          <div class="q-px-lg q-py-sm words-setting">
             <div class="text-h5 q-pl-sm">词组设置</div>
             <!-- 开关 -->
             <div class="row items-center q-mt-xl">
@@ -66,32 +66,8 @@
 
         <q-tab-panel name="主题">
           <div class="q-px-lg q-py-sm row justify-start q-gutter-lg">
-            <q-card @click="changeTheme(key as string)" flat v-for="(value, key) in themes" :key="key">
-              <div class="card-inner">
-                <!-- 正面 -->
-                <div class="front shadow-5" :style='`background-color: ${value.color.bg};color: ${value.color.active}`'>
-                  {{ key }}
-                  <div v-if="current == key" class="icon-container">
-                    <q-icon name="check_circle_outline" size="3rem" class="q-ma-sm"></q-icon>
-                  </div>
-                </div>
-                <!-- 背面 -->
-                <div class="back shadow-5 column justify-center"
-                  :style='`background: linear-gradient(to bottom right ,${value.color.bg}, ${value.color.active})`'>
-                  <!-- 主题描述 -->
-                  <div class="q-mb-sm"
-                    :style='`color: ${value.color.active};text-shadow:  -1px -1px 0 ${value.color.btnText},  1px -1px 0 ${value.color.btnText},-1px  1px 0 ${value.color.btnText}, 1px  1px 0 ${value.color.btnText}; `'>
-                    {{ value.desc }}</div>
-                  <!-- 颜色列表 -->
-                  <div class="row items-center q-px-xl" v-for="(v, k) in value.color" :style='`color: ${v}`'>
-                    <div class="color-square" :style='`background-color: ${v}`'></div>
-                    <div class="color-key q-ml-md">{{ k }} : </div>
-                    <div class="color-value">{{ v }}</div>
-                  </div>
-                </div>
-              </div>
-            </q-card>
-
+              <ThemeCard v-for="(value, key) in themes" :key="key" :themeKey="key" :value="value" :current="current"
+                :changeTheme="changeTheme"></ThemeCard>
           </div>
         </q-tab-panel>
       </q-tab-panels>
@@ -102,16 +78,15 @@
 
 <script lang="ts" setup>
 import { computed, nextTick, ref } from 'vue'
-import { useTypingStore } from '@/stores/useTypingStore'
-import { storeToRefs } from 'pinia'
+import { useSettingStore } from '@/stores/useSettingStore'
 import useTheme from '@/hooks/useTheme'
+import ThemeCard from '@/components/ThemeCard.vue'
 
 // 获取store中的数据
-const { saveSettings, settings } = useTypingStore()
-const { isPhone } = storeToRefs(useTypingStore())
+const { isPhone, settings, saveSettings } = useSettingStore()
 
 // 获取主题数据
-const { changeTheme, themes, current } = useTheme()
+const { themes, current, changeTheme } = useTheme()
 
 // 计算属性：文本域
 const calcString = computed({
@@ -128,7 +103,7 @@ const calcString = computed({
 })
 
 // 切分窗口中线位置
-const splitterModel = ref(isPhone.value ? 30 : 20)
+const splitterModel = ref(isPhone ? 30 : 20)
 // 默认选中
 const selected = ref('计时模式')
 
@@ -211,50 +186,12 @@ function handleTextAreaResize() {
 </script>
 
 <style lang="scss" scoped>
+// 左侧选项
 .q-tab-panels {
   background-color: transparent;
 
   .q-tab-panel {
     overflow: hidden;
-  }
-}
-</style>
-<style lang="scss">
-// 修改文本域样式
-.words-input {
-  color: $text;
-  font-size: 18px;
-  line-height: 1.5 !important;
-  padding: 10px 0 !important;
-  letter-spacing: 2px;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
-}
-
-// 删除文本域的边框
-.q-field__control::before {
-  border-color: transparent !important;
-}
-
-// 左侧除active状态的节点添加透明度
-.q-tree__node--link {
-  &:not(.q-tree__node--selected) {
-    opacity: .8;
-  }
-}
-
-// 开关
-.q-toggle__inner--falsy {
-  .q-toggle__thumb {
-    &::after {
-      border: solid 1px;
-    }
-  }
-}
-
-// 选型组
-.q-radio__inner {
-  &:not(.q-radio__inner--truthy) {
-    color: $text
   }
 }
 
@@ -264,74 +201,44 @@ function handleTextAreaResize() {
 
 }
 
-// 主题卡片容器
-.q-card {
-  width: 300px;
-  height: 200px;
-  perspective: 1000px; // 为了实现3D效果，添加透视
-  background-color: transparent;
-  cursor: pointer;
+</style>
 
-  // 卡片内部元素
-  .card-inner {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    transform-style: preserve-3d; // 保持3D变换
-    transition: transform 0.8s ease-in-out;
+<style lang="scss">
+// 修改文本域样式
+.words-setting .words-input {
+  color: $text;
+  font-size: 18px;
+  line-height: 1.5 !important;
+  padding: 10px 0 !important;
+  letter-spacing: 2px;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
+}
 
-    // 正反样式
-    .front,
-    .back {
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      backface-visibility: hidden; // 防止从背面看到正面
-      border-radius: 10px;
-    }
+// 删除文本域的边框
+.words-setting .q-field__control::before {
+  border-color: transparent !important;
+}
 
-    // 正面
-    .front {
-      line-height: 200px;
-      font-size: 25px;
-      text-align: center;
-
-      .icon-container {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-
-        .q-icon {
-          float: inline-end;
-        }
-      }
-    }
-
-    // 背面
-    .back {
-      transform: rotateY(180deg); // 初始时背面朝上
-      font-size: 18px;
-      text-align: center;
-      font-weight: bold;
-
-      .color-square {
-        height: 18px;
-        width: 18px;
-        border-radius: 5px;
-      }
-
-      .color-value {
-        text-decoration: underline;
-        margin-left: auto;
-      }
-
-    }
+// 选型组
+.words-setting .q-radio__inner {
+  &:not(.q-radio__inner--truthy) {
+    color: $text
   }
+}
 
-  // 鼠标悬停时翻转
-  &:hover .card-inner {
-    transform: rotateY(180deg);
-    transition-delay: .5s;
+// 左侧除active状态的节点添加透明度
+.setting-tree .q-tree__node--link {
+  &:not(.q-tree__node--selected) {
+    opacity: .8;
+  }
+}
+
+// 开关
+.words-setting .q-toggle__inner--falsy {
+  .q-toggle__thumb {
+    &::after {
+      border: solid 1px;
+    }
   }
 }
 </style>

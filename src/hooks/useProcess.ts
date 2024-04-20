@@ -1,7 +1,8 @@
 import type { Block, TypingResult } from "@/types"
-import { onBeforeUnmount, type Ref,nextTick } from "vue"
+import { onBeforeUnmount, type Ref, nextTick } from "vue"
 import { useTypingStore } from '@/stores/useTypingStore'
 import { storeToRefs } from "pinia"
+import { useSettingStore } from "@/stores/useSettingStore"
 
 export default function (
     typingResult: Ref<TypingResult>,
@@ -10,7 +11,8 @@ export default function (
 ) {
 
     // 获取store中的数据
-    const { generateWords, updateRefs, settings } = useTypingStore()
+    const { settings } = useSettingStore()
+    const { generateWords, updateRefs } = useTypingStore()
     const { words, startTime, blocksContainer, blockRefs } = storeToRefs(useTypingStore())
 
     // 输入完成后的操作
@@ -76,7 +78,7 @@ export default function (
     }
 
     // 生成词块
-    function generateBlocks(wordsNum:number) {
+    function generateBlocks(wordsNum: number) {
         // 更新动态节点
         updateRefs()
         // 获取随机词块
