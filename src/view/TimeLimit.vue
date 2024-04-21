@@ -1,8 +1,8 @@
 <template>
-  <div class="items-center column container">
+  <div class="items-center column">
     <div class="q-my-xl row card-container items-center">
       <TransitionGroup name="card" appear>
-        <q-card v-for="(card, index) in cards" :key="card.id" :class="getCardClass(index)"
+        <q-card v-for="(card, index) in cards" :key="card.id" :class="getCardClass(index, card)"
           class="column justify-center items-center shadow-5">
           <div>{{ card.cn }}</div>
           <div>{{ card.en }}</div>
@@ -10,60 +10,137 @@
       </TransitionGroup>
     </div>
     <div class="q-my-xl row items-center full-width">
-      <div class="col">计时</div>
-      <div class="col row justify-center">
-        <q-input v-model="input" @keydown="handleTyping" color="active" outlined/>
+      <div class="col row justify-end">
+        <div>
+          <div class="time-limit">{{ formatTime }}</div>
+          <q-popup-edit v-model="restTime" auto-save v-slot="scope">
+            <q-input v-model="scope.value" autofocus @keyup.enter="scope.set" />
+          </q-popup-edit>
+        </div>
       </div>
-      <div class="col">
-        <q-btn @keydown.space.prevent="restart" @click="restart" class="re-btn" padding="xl" icon="refresh" size="lg"
-          unelevated />
+      <div class="input-container">
+        <q-input ref="inputRef" :disable="!status" v-model="input" @keydown="handleTyping" input-class="input"
+          borderless />
+      </div>
+      <div class="col row justify-start">
+        <div class="btn-container">
+          <q-btn @keydown.space.prevent="restart" @click="restart" class="re-btn" icon="refresh" size="lg" flat />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, computed } from 'vue'
 import { nanoid } from 'nanoid'
 import { useSettingStore } from '@/stores/useSettingStore'
 import { storeToRefs } from 'pinia'
-import type { InputCard, WordCard } from '@/types'
+import type { WordCard } from '@/types'
 
 // 获取所有词组
 const { allWords } = storeToRefs(useSettingStore())
 // 已输入完成的词组
-const currentWords = ref<InputCard[]>([])
+const currentWords = ref<WordCard[]>([])
+// 剩余时间
+const restTime = ref()
+const timeLimit = 10
+restTime.value = timeLimit
+
+
+// 当前状态，输入中或结算中
+const status = ref(true)
+
+// 输入框节点
+const inputRef = ref<HTMLElement | null>(null)
 
 // 动态属性
-function getCardClass(index: number) {
+function getCardClass(index: number, card: WordCard) {
+  let result = ''
+  // 对指定位置的卡片添加样式
   if (index == 2) {
-    return 'mid-card'
+    result += 'mid-card '
   } else if (index == 0 || index == 4) {
-    return 'edge-card'
-  } else {
-    return ''
+    result += 'edge-card '
   }
+  // 添加正误样式
+  if (card.isCorrect != null) {
+    if (card.isCorrect) {
+      result += 'correct-card'
+    } else {
+      result += 'wrong-card'
+    }
+  }
+
+  return result
 }
+// 格式化时间
+const formatTime = computed(() => {
+  const minutes = Math.floor(restTime.value / 60) // 计算分钟数
+  const seconds = restTime.value % 60 // 计算剩余的秒数
+
+  // 使用模板字符串确保分钟和秒都以两位数形式表示，并添加必要的零填充
+  const formattedMinutes = String(minutes).padStart(2, '0')
+  const formattedSeconds = String(seconds).padStart(2, '0')
+
+  return `${formattedMinutes}:${formattedSeconds}`
+})
+
+// 当前计时器
+let timer: number | undefined
+
+// 开始计时
+function startCount() {
+  if (!timer) {
+    timer = setInterval(() => {
+      // 每秒更新剩余时间
+      restTime.value--
+
+      if (restTime.value == 0) {
+        clearInterval(timer)
+        // 时间到
+        timeOut()
+      }
+    }, 1000)
+  }
+
+}
+
+// 计时结束后
+function timeOut() {
+  cards.value.forEach(card => {
+    card.cn = '时间已到'
+    card.en = 'timeout'
+    card.isCorrect = false
+  })
+  status.value = false
+}
+
 
 // 输入框
 const input = ref('')
 
 // 卡片组
 const cards = ref<WordCard[]>([])
+
 // 加载时获取
 getWord(true)
 
-
 // 进行输入
 function handleTyping(e: KeyboardEvent) {
+  // 输入字母后开始计时
+  if (e.code.startsWith('Key') || e.key == ' ') {
+    startCount()
+  }
   // 输入空格后切换至下一个卡片
   if (e.key == ' ') {
-    console.log('1' + input.value + '2')
     // 判断该卡片输入是否正确并添加到已输入的卡片中
-    const { en, cn } = cards.value[2]
+    const { id, en, cn } = cards.value[2]
     const typing = input.value.trim()   // 去除可能出现的空格
     const isCorrect = typing == en || typing == cn
-    currentWords.value.push({ cn, en, typing, isCorrect })
+    currentWords.value.push({ id, cn, en, typing, isCorrect })
+    // 修改词组属性以更改样式
+    cards.value[2].isCorrect = isCorrect
 
     // 清空当前输入框
     nextTick(() => {
@@ -73,13 +150,28 @@ function handleTyping(e: KeyboardEvent) {
     // 删除第一个元素并在最后添加一个元素
     cards.value.shift()
     getWord(false)
-
   }
 }
 
 // 重新开始计时
 function restart() {
-
+  // 恢复状态
+  status.value = true
+  // 清空列表
+  cards.value = []
+  currentWords.value = []
+  // 重新计时
+  restTime.value = timeLimit
+  clearInterval(timer)
+  timer = undefined
+  // 重新获取词组
+  getWord(true)
+  // 输入框获取焦点
+  nextTick(() => {
+    if (inputRef.value) {
+      inputRef.value.focus()
+    }
+  })
 }
 
 
@@ -121,10 +213,6 @@ function getWord(getFive: boolean) {
 </script>
 
 <style lang="scss" scoped>
-.container {
-  border: solid 1px;
-}
-
 // 卡片动画
 .card-move,
 .card-enter-active,
@@ -149,6 +237,7 @@ function getWord(getFive: boolean) {
 // 卡片
 .card-container {
   gap: 40px;
+  width: 1000px;
   height: 300px;
 
   .q-card {
@@ -180,14 +269,51 @@ function getWord(getFive: boolean) {
   }
 }
 
+// 计时器
+.time-limit {
+  height: 80px;
+  line-height: 76px;
+  padding: 0 20px;
+  border: solid 3px;
+  font-size: 3.4em;
+  border-radius: 10px;
+}
+
 // 输入框
-.q-input{
-  width: 240px;
-  font-size: 2.5em;
+.input-container {
+  height: 80px;
+  border: 3px solid;
+  border-radius: 10px;
+  padding: 8px 0;
+  margin: 0 10px;
+  transition: .4s ease;
+
+  .q-input {
+    width: 240px;
+    font-size: 2.5em;
+    padding-left: 10px;
+  }
+
+  &:focus-within {
+    border-color: $active;
+  }
 }
 
 // 重启按钮
-.re-btn {
-  opacity: .5 !important;
+.btn-container {
+  border: 3px solid;
+  border-radius: 10px;
+  height: 80px;
+
+  .re-btn {
+    height: 76px;
+    width: 76px;
+  }
+}
+</style>
+<style lang="scss">
+.input-container .input {
+  color: $text;
+  caret-color: $active;
 }
 </style>

@@ -13,6 +13,7 @@ body {
     transition: background 0.2s, color 0.2s;
 }
 
+/* 计时模式样式 */
 .hide {
     display: none !important;
 }
@@ -37,6 +38,17 @@ body {
 
 .transport {
     opacity: 0 !important;
+}
+
+/* 限时模式样式 */
+.correct-card {
+    background-color: $active !important;
+    color: $btnText !important;
+}
+
+.wrong-card {
+    background-color: $error !important;
+    color: $btnText !important;
 }
 
 

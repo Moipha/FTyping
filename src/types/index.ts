@@ -51,25 +51,17 @@ export interface Theme {
         btnText: string
     }
 }
-// 限时模式中卡片对象
-export interface WordCard {
-    // 卡片id
-    id: string
-    // 汉字内容
-    cn: string
-    // 拼音内容
-    en: string
-}
 
 // 限时模式中已输入的卡片对象
-export interface InputCard{
+export interface WordCard{
+    // 卡片id
+    id: string
     // 原汉字内容
     cn: string
     // 原拼音内容
     en: string
     // 用户输入的内容
-    typing: string
+    typing?: string
     // 是否正确
-    isCorrect: boolean
-    /* 由于是输入完一个卡片后添加一个该对象，所以四项属性都是必须的 */
+    isCorrect?: boolean
 }
