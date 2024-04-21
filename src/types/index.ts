@@ -53,7 +53,7 @@ export interface Theme {
 }
 
 // 限时模式中已输入的卡片对象
-export interface WordCard{
+export interface WordCard {
     // 卡片id
     id: string
     // 原汉字内容
@@ -64,4 +64,14 @@ export interface WordCard{
     typing?: string
     // 是否正确
     isCorrect?: boolean
+}
+
+// 限时模式结果
+export interface LimitResult {
+    // 拼写速度
+    wpm: string
+    // 拼写正确的词组
+    correctWords: WordCard[]
+    // 拼写错误的词组
+    wrongWords: WordCard[]
 }
