@@ -15,7 +15,7 @@
       <div class="col row justify-end">
         <div>
           <div class="time-limit shadow-3" :class="status ? '' : 'wrong'">{{ formatTime }}</div>
-          <q-popup-edit v-model="restTime" auto-save v-slot="scope">
+          <q-popup-edit v-model="timeLimit" auto-save v-slot="scope">
             <q-input v-model="scope.value" autofocus @keyup.enter="scope.set" />
           </q-popup-edit>
         </div>
@@ -31,47 +31,53 @@
       </div>
     </div>
     <!-- 结果显示 -->
-    <div v-if="!status" class="result-container">
-      <q-card class="shadow-3 row justify-center">
-        <div class="wpm correct">WPM {{ result.wpm }}</div>
-      </q-card>
-      <div class="row item-container">
-        <div class="result-item col">
-          <q-card class="col shadow-3 correct row justify-center">
-            <q-expansion-item header-class="expansion" class="fit"
-              :label='`正确 ${result.correctWords.length.toString()}`'>
-              <div class="row">
-                <q-card v-for="word in result.correctWords"
-                  class="shadow-3 correct-card column justify-center items-center result-block">
-                  <div>{{ word.cn }}</div>
-                  <div>{{ word.typing }}</div>
-                </q-card>
-              </div>
-            </q-expansion-item>
-          </q-card>
-        </div>
-        <div class="result-item col">
-          <q-card class="col shadow-3 wrong row justify-center">
-            <q-expansion-item header-class="expansion" class="fit" :label='`错误 ${result.wrongWords.length.toString()}`'>
-              <div class="row">
-                <q-card v-for="word in result.wrongWords"
-                  class="shadow-3 wrong-card column justify-center items-center result-block">
-                  <div>{{ word.cn }}</div>
-                  <div>{{ word.typing }}</div>
-                </q-card>
-              </div>
-            </q-expansion-item>
-          </q-card>
-        </div>
-      </div>
+    <div class="result-container">
+      <!-- wpm显示 -->
+      <Transition name="wpm">
+        <q-card v-if="!status" class="shadow-3 row justify-center">
+          <div class="wpm correct">WPM {{ result.wpm }}</div>
+        </q-card>
+      </Transition>
 
-
+      <!-- 正误词组显示 -->
+      <Transition name="word">
+        <div v-if="!status" class="row item-container">
+          <div class="result-item col">
+            <q-card class="col shadow-3 correct row justify-center">
+              <q-expansion-item header-class="expansion" class="fit"
+                :label='`正确 ${result.correctWords.length.toString()}`'>
+                <div class="row">
+                  <q-card v-for="word in result.correctWords"
+                    class="shadow-3 correct-card column justify-center items-center result-block">
+                    <div>{{ word.cn }}</div>
+                    <div>{{ word.typing }}</div>
+                  </q-card>
+                </div>
+              </q-expansion-item>
+            </q-card>
+          </div>
+          <div class="result-item col">
+            <q-card class="col shadow-3 wrong row justify-center">
+              <q-expansion-item header-class="expansion" class="fit"
+                :label='`错误 ${result.wrongWords.length.toString()}`'>
+                <div class="row">
+                  <q-card v-for="word in result.wrongWords"
+                    class="shadow-3 wrong-card column justify-center items-center result-block">
+                    <div>{{ word.cn }}</div>
+                    <div>{{ word.typing }}</div>
+                  </q-card>
+                </div>
+              </q-expansion-item>
+            </q-card>
+          </div>
+        </div>
+      </Transition>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, nextTick, computed } from 'vue'
+import { ref, nextTick, computed, watch } from 'vue'
 import { nanoid } from 'nanoid'
 import { useSettingStore } from '@/stores/useSettingStore'
 import { storeToRefs } from 'pinia'
@@ -83,8 +89,11 @@ const { allWords } = storeToRefs(useSettingStore())
 const currentWords = ref<WordCard[]>([])
 // 剩余时间
 const restTime = ref()
-const timeLimit = 10
-restTime.value = timeLimit
+const timeLimit = ref(10)
+
+watch(timeLimit, (value) => {
+    restTime.value = value
+  }, { deep: true, immediate: true })
 
 
 // 当前状态，输入中或结算中
@@ -161,7 +170,7 @@ function timeOut() {
 
   // 计算WPM，四舍五入保留两位小数
   const correctLength = correctWords.length
-  let wpmNumber = (correctLength / timeLimit * 60)
+  let wpmNumber = (correctLength / timeLimit.value * 60)
   wpmNumber = Math.round(wpmNumber * 100) / 100.
   const wpm = wpmNumber.toFixed(2)
 
@@ -218,7 +227,7 @@ function restart() {
   currentWords.value = []
   input.value = ''
   // 重新计时
-  restTime.value = timeLimit
+  restTime.value = timeLimit.value
   clearInterval(timer)
   timer = undefined
   // 重新获取词组
@@ -405,6 +414,49 @@ nextTick(() => {
     }
   }
 }
+
+// 结果动画
+
+.wpm-enter-active {
+  transition: all 0.5s ease;
+}
+
+.wpm-leave-active {
+  transition: all 0.5s ease;
+  transition-delay: 0.5s;
+}
+
+.wpm-enter-from {
+  opacity: 0 !important;
+  transform: translateY(80px);
+}
+
+.wpm-leave-to {
+  opacity: 0 !important;
+  transform: translateY(80px);
+}
+
+
+
+.word-enter-active {
+  transition: all 0.5s ease;
+  transition-delay: 0.5s;
+}
+
+.word-leave-active {
+  transition: all 0.5s ease;
+}
+
+.word-enter-from {
+  opacity: 0 !important;
+  transform: translateY(80px);
+}
+
+.word-leave-to {
+  opacity: 0 !important;
+  transform: translateY(80px);
+}
+
 </style>
 <style lang="scss">
 .input-container .input {
