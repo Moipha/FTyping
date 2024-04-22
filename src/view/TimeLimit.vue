@@ -1,7 +1,7 @@
 <template>
   <div class="items-center column">
     <!-- 词组卡片 -->
-    <div class="q-my-xl row card-container items-center">
+    <div class="q-mt-sm q-mb-xl row card-container items-center">
       <TransitionGroup name="card" appear>
         <q-card v-for="(card, index) in cards" :key="card.id" :class="getCardClass(index, card)"
           class="column justify-center items-center shadow-5">
@@ -15,8 +15,9 @@
       <div class="col row justify-end">
         <div>
           <div class="time-limit shadow-3" :class="status ? '' : 'wrong'">{{ formatTime }}</div>
-          <q-popup-edit v-model="timeLimit" auto-save v-slot="scope">
-            <q-input v-model="scope.value" autofocus @keyup.enter="scope.set" />
+          <q-popup-edit class="popup" v-model="timeLimit" auto-save v-slot="scope">
+            <q-input color="active" placeholder="限时时长(单位: 秒)" v-model="scope.value" autofocus
+              @keyup.enter="scope.set" />
           </q-popup-edit>
         </div>
       </div>
@@ -46,7 +47,7 @@
             <q-card class="col shadow-3 correct row justify-center">
               <q-expansion-item header-class="expansion" class="fit"
                 :label='`正确 ${result.correctWords.length.toString()}`'>
-                <div class="row">
+                <div class="row expansion-container">
                   <q-card v-for="word in result.correctWords"
                     class="shadow-3 correct-card column justify-center items-center result-block">
                     <div>{{ word.cn }}</div>
@@ -60,7 +61,7 @@
             <q-card class="col shadow-3 wrong row justify-center">
               <q-expansion-item header-class="expansion" class="fit"
                 :label='`错误 ${result.wrongWords.length.toString()}`'>
-                <div class="row">
+                <div class="row expansion-container">
                   <q-card v-for="word in result.wrongWords"
                     class="shadow-3 wrong-card column justify-center items-center result-block">
                     <div>{{ word.cn }}</div>
@@ -91,9 +92,21 @@ const currentWords = ref<WordCard[]>([])
 const restTime = ref()
 const timeLimit = ref(10)
 
-watch(timeLimit, (value) => {
+watch(timeLimit, (value, old) => {
+  // 不可以设置为0或负数
+  if (value > 0) {
     restTime.value = value
-  }, { deep: true, immediate: true })
+    nextTick(()=>{
+      restart()
+    })
+  } else {
+    if (old) {
+      timeLimit.value = old
+    }else{
+      console.error('初始设置时间为非正数')
+    }
+  }
+}, { deep: true, immediate: true })
 
 
 // 当前状态，输入中或结算中
@@ -144,7 +157,7 @@ function startCount() {
       // 每秒更新剩余时间
       restTime.value--
 
-      if (restTime.value == 0) {
+      if (restTime.value <= 0) {
         clearInterval(timer)
         // 时间到
         timeOut()
@@ -162,6 +175,8 @@ function timeOut() {
     card.isCorrect = false
   })
   status.value = false
+  // 设置当前时间为00:00
+  restTime.value = 0
   // 计算结果
 
   // 获取拼写正确的词组和错误的词组
@@ -391,6 +406,7 @@ nextTick(() => {
 
   .q-card {
     border-radius: 10px;
+    background-color: $bg;
   }
 
   .wpm {
@@ -408,12 +424,17 @@ nextTick(() => {
         line-height: normal;
         font-size: 1.2em;
         padding: 10px 15px;
-        margin-bottom: 5px;
-        margin-left: 5px;
+      }
+
+      .expansion-container {
+        gap: 5px;
+        padding: 5px;
       }
     }
+
   }
 }
+
 
 // 结果动画
 
@@ -456,18 +477,36 @@ nextTick(() => {
   opacity: 0 !important;
   transform: translateY(80px);
 }
-
 </style>
 <style lang="scss">
+// 输入框
 .input-container .input {
   color: $text;
   caret-color: $active;
 }
 
+// 扩展内容title样式
 .expansion {
   height: 80px;
   line-height: 80px;
   text-align: center;
   font-size: 2em;
+  border-radius: 10px;
+}
+
+
+// 弹出代理样式
+.popup {
+  width: 100px;
+  border-radius: 10px;
+  box-shadow: none;
+
+  .q-input {
+    font-size: 3em;
+
+    ::placeholder {
+      font-size: 14px;
+    }
+  }
 }
 </style>
