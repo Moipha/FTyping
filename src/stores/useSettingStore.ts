@@ -39,7 +39,9 @@ export const useSettingStore = defineStore('setting', () => {
         // 默认生成词数
         generateWordsNum: 30,
         // 自定义词组字符串
-        customString: ''
+        customString: '',
+        // 默认限制时间
+        limitTime: 20
     })
 
     // 是否已有弹窗

@@ -35,7 +35,9 @@ export interface Settings {
     // 默认生成词数
     generateWordsNum: number,
     // 自定义词组字符串
-    customString: string
+    customString: string,
+    // 默认限定时长
+    limitTime: number
 }
 
 // 主题对象

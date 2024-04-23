@@ -24,50 +24,65 @@
     <!-- 右侧 -->
     <template v-slot:after>
       <q-tab-panels class="q-pa-sm" v-model="selected" animated transition-prev="slide-down" transition-next="slide-up">
-        <q-tab-panel name="计时模式">
-          <div class="q-px-lg q-py-sm words-setting">
-            <div class="text-h5 q-pl-sm">词组设置</div>
-            <!-- 开关 -->
-            <div class="row items-center q-mt-xl">
-              <q-toggle @update:model-value="((b: boolean) => handleToggleChange(b))" size="50px" color="active" dark
-                keep-color v-model="settings.useDefaultWords"><span class="text-subtitle1">使用默认词组</span></q-toggle>
-              <q-icon size="20px" color="text" class="q-ml-xs cursor-pointer" name="info">
-                <q-tooltip transition-show="scale" transition-hide="scale" class="text-btnText bg-active"
-                  anchor="top middle" self="bottom middle" :offset="[10, 10]">
-                  <b style="font-size: 13px">设置词组时注意词组间用 | 分隔；</b><br>
-                  <b style="font-size: 13px">在保存时会自动忽略重复词组</b>
-                </q-tooltip>
-              </q-icon>
-              <span class="words-count q-ml-lg">共{{ [...new Set(calcString.split('|'))].filter(str => str.trim() !==
-                '').length }}词</span>
+        <q-tab-panel name="通用">
+          <div class="q-px-lg q-py-sm">
+            <div class="text-h5">词组设置</div>
+            <div class="q-pa-md q-mt-lg">
+              <!-- 开关 -->
+              <div class="row items-center">
+                <q-toggle @update:model-value="((b: boolean) => handleToggleChange(b))" size="50px" color="active" dark
+                  keep-color v-model="settings.useDefaultWords"><span class="text-subtitle1">使用默认词组</span></q-toggle>
+                <q-icon size="20px" color="text" class="q-ml-xs cursor-pointer" name="info">
+                  <q-tooltip transition-show="scale" transition-hide="scale" class="text-btnText bg-active"
+                    anchor="top middle" self="bottom middle" :offset="[10, 10]">
+                    <b style="font-size: 13px">设置词组时注意词组间用 | 分隔；</b><br>
+                    <b style="font-size: 13px">在保存时会自动忽略重复词组</b>
+                  </q-tooltip>
+                </q-icon>
+                <span class="words-count q-ml-lg">共{{ [...new Set(calcString.split('|'))].filter(str => str.trim() !==
+                  '').length }}词</span>
+              </div>
+              <!-- 文本域 -->
+              <div class="q-mt-sm words-setting">
+                <q-input placeholder="请在此处输入自定义词组..." :disable="settings.useDefaultWords" color="active"
+                  input-class="words-input" v-model="calcString" autogrow outlined>
+                  <q-resize-observer @resize="handleTextAreaResize" />
+                </q-input>
+                <div class="row justify-end">
+                  <q-btn @click="saveSettings(settings)" :disable="settings.useDefaultWords" push
+                    class="q-mt-sm q-mr-sm" size="16px" color="active" text-color="btnText"><span
+                      class="q-px-md">保存</span></q-btn>
+                </div>
+              </div>
             </div>
-            <!-- 文本域 -->
-            <q-input placeholder="请在此处输入自定义词组..." :disable="settings.useDefaultWords" color="active"
-              input-class="words-input" class="q-mt-sm" v-model="calcString" autogrow outlined>
-              <q-resize-observer @resize="handleTextAreaResize" />
-            </q-input>
-            <q-btn @click="saveSettings(settings)" :disable="settings.useDefaultWords" push class="float-right q-mt-sm"
-              size="16px" color="active" text-color="btnText"><span class="q-px-md">保存</span></q-btn>
-            <!-- 选项组 -->
-            <div class="row q-mt-xl">
-              <div class="row items-center text-subtitle1 q-ml-md" :class="isPhone ? 'col-12' : 'col-2'">默认生成词数</div>
+
+            <q-separator class="q-my-xl divider" color="text" />
+            <!-- 计时模式 -->
+            <div class="text-h5 q-mt-xl">计时模式</div>
+            <div class="row q-pa-md q-mt-lg">
+              <div class="row items-center text-subtitle1 q-ml-sm" :class="isPhone ? 'col-12' : 'col-2'">默认生成词数</div>
               <div class="col">
                 <q-option-group @update:model-value="((num: number) => handleWordsNumChange(num))"
                   v-model="settings.generateWordsNum" :options="options" color="active" dark inline />
               </div>
             </div>
-
+            <q-separator class="q-my-xl divider" color="text" />
+            <!-- 限时模式 -->
+            <div class="text-h5">限时模式</div>
+            <div class="row q-pa-md q-mt-lg time-limit-setting">
+              <div class="row items-center text-subtitle1 q-ml-sm" :class="isPhone ? 'col-12' : 'col-2'">默认限定时长</div>
+              <div class="col row">
+                <q-input @blur="saveSettings(settings)" @keydown.enter="saveSettings(settings)" suffix="秒"
+                  input-class="time-input" v-model="limitTime" color="active" outlined></q-input>
+              </div>
+            </div>
           </div>
         </q-tab-panel>
 
-        <q-tab-panel name="限时模式">
-          限时模式设置
-        </q-tab-panel>
-
         <q-tab-panel name="主题">
-          <div class="q-px-lg q-py-sm row justify-start q-gutter-lg">
-              <ThemeCard v-for="(value, key) in themes" :key="key" :themeKey="key" :value="value" :current="current"
-                :changeTheme="changeTheme"></ThemeCard>
+          <div class="q-px-lg q-py-sm row q-gutter-lg">
+            <ThemeCard v-for="(value, key) in themes" :key="key" :themeKey="key" :value="value" :current="current"
+              :changeTheme="changeTheme"></ThemeCard>
           </div>
         </q-tab-panel>
       </q-tab-panels>
@@ -105,7 +120,7 @@ const calcString = computed({
 // 切分窗口中线位置
 const splitterModel = ref(isPhone ? 30 : 20)
 // 默认选中
-const selected = ref('计时模式')
+const selected = ref('通用')
 
 
 // 树状选项
@@ -116,17 +131,26 @@ const simple = ref([{
   iconSize: '2rem',
   children: [
     {
-      label: '计时模式',
-      icon: 'alarm',
+      label: '通用',
+      icon: 'tune',
       fontSize: '1rem',
       iconSize: '1.4rem',
+      // children: [
+      //   {
+      //     label: '计时模式',
+      //     icon: 'alarm',
+      //     fontSize: '.8rem',
+      //     iconSize: '1.2rem',
+      //   },
+      //   {
+      //     label: '限时模式',
+      //     icon: 'notifications_none',
+      //     fontSize: '.8rem',
+      //     iconSize: '1.2rem',
+      //   },
+      // ]
     },
-    {
-      label: '限时模式',
-      icon: 'notifications_none',
-      fontSize: '1rem',
-      iconSize: '1.4rem',
-    },
+
     {
       label: '主题',
       icon: 'color_lens',
@@ -183,6 +207,21 @@ function handleTextAreaResize() {
   }
 }
 
+/* 限时模式 */
+
+// 处理默认限定时间变动
+const limitTime = computed({
+  get() {
+    return settings.limitTime || 20
+  },
+  set(value) {
+    // 如果试图设置时长为非正数时，不修改设置中的值
+    if (value > 0) {
+      settings.limitTime = value
+    }
+  }
+})
+
 </script>
 
 <style lang="scss" scoped>
@@ -201,6 +240,11 @@ function handleTextAreaResize() {
 
 }
 
+// 设置中的分割线
+.divider {
+  opacity: .3 !important;
+  height: 2px;
+}
 </style>
 
 <style lang="scss">
@@ -224,6 +268,11 @@ function handleTextAreaResize() {
   &:not(.q-radio__inner--truthy) {
     color: $text
   }
+
+}
+
+.q-radio--dark .q-radio__inner {
+  color: $text
 }
 
 // 左侧除active状态的节点添加透明度
@@ -239,6 +288,20 @@ function handleTextAreaResize() {
     &::after {
       border: solid 1px;
     }
+  }
+}
+
+// 输入框
+.time-limit-setting {
+  .time-input {
+    width: 100px;
+    color: $text;
+    font-size: 2em;
+  }
+
+  // 删除输入框的边框
+  .q-field__control::before {
+    border: solid $text 2px !important;
   }
 }
 </style>

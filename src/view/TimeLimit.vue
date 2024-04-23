@@ -78,31 +78,31 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, nextTick, computed, watch } from 'vue'
+import { ref, nextTick, computed, watch, toRef } from 'vue'
 import { nanoid } from 'nanoid'
 import { useSettingStore } from '@/stores/useSettingStore'
 import { storeToRefs } from 'pinia'
 import type { LimitResult, WordCard } from '@/types'
 
-// 获取所有词组
-const { allWords } = storeToRefs(useSettingStore())
+// 获取设置项和全部词组
+const { allWords, settings } = storeToRefs(useSettingStore())
 // 已输入完成的词组
 const currentWords = ref<WordCard[]>([])
 // 剩余时间
 const restTime = ref()
-const timeLimit = ref(10)
+const timeLimit = toRef(settings.value.limitTime)
 
 watch(timeLimit, (value, old) => {
   // 不可以设置为0或负数
   if (value > 0) {
     restTime.value = value
-    nextTick(()=>{
+    nextTick(() => {
       restart()
     })
   } else {
     if (old) {
       timeLimit.value = old
-    }else{
+    } else {
       console.error('初始设置时间为非正数')
     }
   }

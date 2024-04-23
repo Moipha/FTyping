@@ -21,7 +21,7 @@ export default defineConfig({
     }
   },
 
-  // 默认引入quasar提供的样式变量
+  // 默认引入自定义样式变量
   css: {
     preprocessorOptions: {
       scss: {
