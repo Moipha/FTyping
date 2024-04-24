@@ -94,7 +94,7 @@
 <script lang="ts" setup>
 import { computed, nextTick, ref } from 'vue'
 import { useSettingStore } from '@/stores/useSettingStore'
-import useTheme from '@/hooks/useTheme'
+import useTheme from '@/hooks/TimeKeep/useTheme'
 import ThemeCard from '@/components/ThemeCard.vue'
 
 // 获取store中的数据

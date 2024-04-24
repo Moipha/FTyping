@@ -62,9 +62,9 @@
 
 <script lang="ts" setup>
 import { onBeforeUnmount, onMounted, ref, watch, nextTick } from 'vue'
-import useCaret from '@/hooks/useCaret'
-import useTyping from '@/hooks/useTyping'
-import useProcess from '@/hooks/useProcess'
+import useCaret from '@/hooks/TimeKeep/useCaret'
+import useTyping from '@/hooks/TimeKeep/useTyping'
+import useProcess from '@/hooks/TimeKeep/useProcess'
 import { useTypingStore } from '@/stores/useTypingStore'
 import type { TypingResult } from '@/types'
 import { storeToRefs } from 'pinia'
