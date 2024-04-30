@@ -197,5 +197,5 @@ export default function () {
     // 加载时获取
     getWord(true)
 
-    return { cards, status, formatTime, timeLimit, input, result, handleTyping, restart }
+    return { cards, status, formatTime, timeLimit, input, result, inputRef, handleTyping, restart }
 }

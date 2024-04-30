@@ -149,7 +149,7 @@ onBeforeUnmount(() => {
     width: 90vw;
   }
 
-  width: 60vw;
+  width: 900px;
   gap: 15px;
 
   // 浮标

@@ -12,9 +12,9 @@
             <div class="back shadow-5 column justify-center"
                 :style='`background: linear-gradient(to bottom right ,${value.color.bg}, ${value.color.active})`'>
                 <!-- 主题描述 -->
-                <div class="q-mb-sm"
-                    :style='`color: ${value.color.active};text-shadow:  -1px -1px 0 ${value.color.btnText},  1px -1px 0 ${value.color.btnText},-1px  1px 0 ${value.color.btnText}, 1px  1px 0 ${value.color.btnText}; `'>
-                    {{ value.desc }}</div>
+                <!-- <div class="q-mb-sm"
+                    :style='`color: ${value.color.active};text-shadow:  -1px -1px 0 ${value.color.bg},  1px -1px 0 ${value.color.bg},-1px  1px 0 ${value.color.bg}, 1px  1px 0 ${value.color.bg}; `'>
+                    {{ value.desc }}</div> -->
                 <!-- 颜色列表 -->
                 <div class="row items-center q-px-xl" v-for="(v, k) in value.color" :style='`color: ${v}`'>
                     <div class="color-square" :style='`background-color: ${v}`'></div>

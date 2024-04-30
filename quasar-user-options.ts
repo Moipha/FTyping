@@ -5,11 +5,11 @@ import { Notify } from 'quasar'
 
 // 获取本地内存中的主题
 const theme = localStorage.getItem('theme') ? JSON.parse(localStorage.getItem('theme') as string).color : {
-  active: '#ffc107',
-  error: '#c10015',
-  bg: '#282c34',
-  btnText: 'black',
-  text: 'whitesmoke'
+  active: '#42b883',
+  error: '#ff6464',
+  text: '#213547',
+  btnText: '#ffffff',
+  bg: '#ffffff'
 }
 export default {
   config: {

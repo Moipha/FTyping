@@ -79,9 +79,9 @@
 
 <script lang="ts" setup>
 import type { WordCard } from '@/types'
-import useTime from '@/hooks/TimeLimit/useTime';
+import useTime from '@/hooks/TimeLimit/useTime'
 
-const { cards, status, formatTime, timeLimit, input, result, handleTyping, restart } = useTime()
+const { cards, status, formatTime, timeLimit, input, inputRef, result, handleTyping, restart } = useTime()
 
 
 // 动态属性
@@ -109,26 +109,6 @@ function getCardClass(index: number, card: WordCard) {
 </script>
 
 <style lang="scss" scoped>
-// 卡片动画
-.card-move,
-.card-enter-active,
-.card-leave-active {
-  transition: all 0.5s ease;
-}
-
-.card-enter-from {
-  opacity: 0 !important;
-  transform: translateX(200px);
-}
-
-.card-leave-to {
-  opacity: 0 !important;
-  transform: translateX(-200px);
-}
-
-.card-leave-active {
-  position: absolute;
-}
 
 // 卡片
 .card-container {
@@ -242,48 +222,6 @@ function getCardClass(index: number, card: WordCard) {
   }
 }
 
-
-// 结果动画
-
-.wpm-enter-active {
-  transition: all 0.5s ease;
-}
-
-.wpm-leave-active {
-  transition: all 0.5s ease;
-  transition-delay: 0.5s;
-}
-
-.wpm-enter-from {
-  opacity: 0 !important;
-  transform: translateY(80px);
-}
-
-.wpm-leave-to {
-  opacity: 0 !important;
-  transform: translateY(80px);
-}
-
-
-
-.word-enter-active {
-  transition: all 0.5s ease;
-  transition-delay: 0.5s;
-}
-
-.word-leave-active {
-  transition: all 0.5s ease;
-}
-
-.word-enter-from {
-  opacity: 0 !important;
-  transform: translateY(80px);
-}
-
-.word-leave-to {
-  opacity: 0 !important;
-  transform: translateY(80px);
-}
 </style>
 <style lang="scss">
 // 输入框
