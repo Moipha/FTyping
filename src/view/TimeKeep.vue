@@ -8,7 +8,7 @@
       </span>
     </div>
     <div v-show="!showResult" class="items-center column">
-      <div ref="blocksContainer" @focus="startTyping" @blur="endTyping" @keydown="typing" @keydown.space.prevent
+      <div ref="blocksContainer" @focus="startTyping" @blur="endTyping" @keydown="typing"
         @click="handleTyping" tabindex="0" class="row words-container">
         <div ref="caret" class="caret"></div>
         <div :ref="(el) => setBlockRef(el as HTMLElement, index)" v-for="(word, index) in words" :key="index"

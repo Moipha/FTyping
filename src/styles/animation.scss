@@ -83,3 +83,17 @@
 .card-leave-active {
   position: absolute;
 }
+
+// 自定义主题色块
+
+.bot-move,
+.bot-enter-active,
+.bot-leave-active {
+  transition: all 0.5s ease;
+}
+
+.bot-enter-from,
+.bot-leave-to {
+  opacity: 0 !important;
+  transform: translateX(-50px);
+}

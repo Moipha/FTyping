@@ -17,6 +17,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
+      // 定义src目录的路径别名为@
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
@@ -25,7 +26,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: '@import "@/assets/customVariables.scss";'
+        additionalData: '@import "@/styles/customVariables.scss";'
       }
     }
   }

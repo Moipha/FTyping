@@ -7,7 +7,7 @@ import { Quasar } from 'quasar'
 import quasarUserOptions from '../quasar-user-options'
 
 import 'quasar/dist/quasar.css'
-import '@/assets/global.scss'
+import '@/styles/global.scss'
 
 const app = createApp(App)
 
