@@ -8,7 +8,7 @@ export default defineConfig({
   // server: {
   //   port: 80
   // },
-  base: '/f-typing/',
+  // base: '/f-typing/',
   build: {
     outDir: 'docs'
   },
