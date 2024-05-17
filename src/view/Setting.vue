@@ -91,7 +91,8 @@
             <div class="text-h5 q-mb-xl">定制主题</div>
             <div class="q-pa-md q-mt-lg row">
               <!-- 示例 -->
-              <div class="col q-mx-lg q-pa-md example-container column justify-center" :style="`background: ${customTheme.color.bg}`">
+              <div class="col q-mx-lg q-pa-md example-container column justify-center"
+                :style="`background: ${customTheme.color.bg}`">
                 <!-- 计时模式 -->
                 <div class="row q-gutter-lg justify-center">
                   <div class="column items-center word-block" :style="`color: ${customTheme.color.active}`">
@@ -127,7 +128,7 @@
                     <div>shili</div>
                   </q-card>
                   <q-card class="column justify-center items-center shadow-3"
-                    :style="`color: ${customTheme.color.text}`">
+                    :style="`color: ${customTheme.color.text}; background: ${customTheme.color.bg}`">
                     <div>示例</div>
                     <div>shili</div>
                   </q-card>
@@ -358,49 +359,49 @@ const colorDesc = {
 .example-container {
   border: 1.5px solid;
   border-radius: 8px;
-}
 
-// 词组
-.word-block {
+  // 词组
+  .word-block {
 
-  // 下方拼音
-  .en-word {
-    margin-top: -3px;
+    // 下方拼音
+    .en-word {
+      margin-top: -3px;
 
-    // 单个字母
-    code {
-      transition: 0.2s;
-      font-family: 'Consolas';
-      margin: 0 0.5px;
-      font-size: 22px;
+      // 单个字母
+      code {
+        transition: 0.2s;
+        font-family: 'Consolas';
+        margin: 0 0.5px;
+        font-size: 22px;
+      }
+    }
+
+    // 上方汉字
+    .cn-word {
+      transition: 0.1s;
+      font-size: medium;
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
+    }
+
+    // 浮标
+    .caret {
+      display: block;
+      position: absolute;
+      width: 3px;
+      height: 28px;
+      border-radius: 10px;
+      transition: .2s ease-out;
     }
   }
 
-  // 上方汉字
-  .cn-word {
-    transition: 0.1s;
-    font-size: medium;
-    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
-  }
-
-  // 浮标
-  .caret {
-    display: block;
-    position: absolute;
-    width: 3px;
-    height: 28px;
+  // 示例卡片
+  .q-card {
+    width: 100px;
+    height: 100px;
+    transition: all 0.5s ease;
+    font-size: 1.2em;
     border-radius: 10px;
-    transition: .2s ease-out;
   }
-}
-
-// 示例卡片
-.q-card {
-  width: 100px;
-  height: 100px;
-  transition: all 0.5s ease;
-  font-size: 1.2em;
-  border-radius: 10px;
 }
 </style>
 
