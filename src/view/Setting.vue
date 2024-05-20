@@ -6,8 +6,8 @@
     <!-- 左侧 -->
     <template v-slot:before>
       <div class="q-pa-md setting-tree">
-        <q-tree :dense="isPhone" no-selection-unset text-color="text" color="text" :nodes="simple" node-key="label"
-          selected-color="active" v-model:selected="selected" default-expand-all>
+        <q-tree ref="tree" :dense="isPhone" no-selection-unset text-color="text" color="text" :nodes="simple"
+          node-key="label" selected-color="active" v-model:selected="selected" default-expand-all>
           <template v-slot:default-header="prop">
             <div class="row items-center q-ma-xs">
               <q-icon :name="prop.node.icon || 'share'" :size="prop.node.iconSize" class="q-mr-sm" />
@@ -23,7 +23,8 @@
     </template>
     <!-- 右侧 -->
     <template v-slot:after>
-      <q-tab-panels class="q-pa-sm" v-model="selected" animated transition-prev="slide-down" transition-next="slide-up">
+      <q-tab-panels v-model="selected" animated transition-prev="slide-down" transition-next="slide-up"
+        transition-duration="500">
         <q-tab-panel name="通用">
           <div class="q-px-lg q-py-sm">
             <div class="text-h5">词组设置</div>
@@ -79,8 +80,8 @@
           </div>
         </q-tab-panel>
 
-        <q-tab-panel name="主题">
-          <div class="q-px-lg q-py-sm row q-gutter-lg">
+        <q-tab-panel name="切换主题">
+          <div class="q-px-lg q-py-md row q-gutter-lg">
             <ThemeCard v-for="(value, key) in themes" :key="key" :themeKey="key" :value="value" :current="current"
               :changeTheme="changeTheme"></ThemeCard>
           </div>
@@ -163,7 +164,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useSettingStore } from '@/stores/useSettingStore'
 import useTheme from '@/hooks/Setting/useTheme'
 import ThemeCard from '@/components/ThemeCard.vue'
@@ -193,6 +194,24 @@ const calcString = computed({
 const splitterModel = ref(isPhone ? 30 : 20)
 // 默认选中
 const selected = ref('通用')
+// 禁止切换的选项
+const disableOptions = ['设置', '主题']
+
+// 获取树状图ref
+const tree = ref()
+
+// 切换选项
+watch(selected, (n, o) => {
+  // 新选项为禁止切换的选项
+  if (disableOptions.includes(n)) {
+    // 修改当前选项为旧选项
+    selected.value = o
+    // 收缩对应折叠栏
+    const expanded = !tree.value.isExpanded(n)
+    tree.value.setExpanded(n, expanded)
+  }
+})
+
 
 
 // 树状选项
@@ -208,13 +227,18 @@ const simple = ref([{
       fontSize: '1rem',
       iconSize: '1.4rem',
     },
-
     {
       label: '主题',
       icon: 'color_lens',
       fontSize: '1rem',
       iconSize: '1.4rem',
       children: [
+        {
+          label: '切换主题',
+          icon: 'compare_arrows',
+          fontSize: '1rem',
+          iconSize: '1.4rem',
+        },
         {
           label: '自定义主题',
           icon: 'colorize',
@@ -323,10 +347,6 @@ const colorDesc = {
 // 左侧选项
 .q-tab-panels {
   background-color: transparent;
-
-  .q-tab-panel {
-    overflow: hidden;
-  }
 }
 
 // 次数统计
@@ -402,6 +422,11 @@ const colorDesc = {
     font-size: 1.2em;
     border-radius: 10px;
   }
+}
+
+// 右侧
+.q-tab-panels.q-panel-parent {
+  height: calc(100vh - 170px) !important;
 }
 </style>
 

@@ -19,7 +19,11 @@ const router = createRouter({
     {
       path: '/setting',
       component: ()=> import('@/view/Setting.vue')
-    }
+    },
+    {
+      path: '/rank',
+      component: ()=> import('@/view/Rank.vue')
+    },
   ],
 })
 

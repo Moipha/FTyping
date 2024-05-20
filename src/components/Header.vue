@@ -6,6 +6,7 @@
         </q-tabs>
         <div class="row items-center">
             <q-fab color="active" text-color="btnText" icon="menu" direction="left">
+                <q-fab-action draggable="false" to="/rank" color="active" text-color="btnText" icon="equalizer" />
                 <q-fab-action draggable="false" to="/setting" color="active" text-color="btnText" icon="settings" />
             </q-fab>
         </div>
