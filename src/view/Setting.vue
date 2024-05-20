@@ -5,17 +5,7 @@
     style="height: calc(100vh - 170px)">
     <!-- 左侧 -->
     <template v-slot:before>
-      <div class="q-pa-md setting-tree">
-        <q-tree ref="tree" :dense="isPhone" no-selection-unset text-color="text" color="text" :nodes="simple"
-          node-key="label" selected-color="active" v-model:selected="selected" default-expand-all>
-          <template v-slot:default-header="prop">
-            <div class="row items-center q-ma-xs">
-              <q-icon :name="prop.node.icon || 'share'" :size="prop.node.iconSize" class="q-mr-sm" />
-              <div class="text-weight-bold" :style="`font-size: ${prop.node.fontSize}`">{{ prop.node.label }}</div>
-            </div>
-          </template>
-        </q-tree>
-      </div>
+      <SettingTree v-model="selected" />
     </template>
     <!-- 分割线 -->
     <template v-slot:separator>
@@ -26,58 +16,7 @@
       <q-tab-panels v-model="selected" animated transition-prev="slide-down" transition-next="slide-up"
         transition-duration="500">
         <q-tab-panel name="通用">
-          <div class="q-px-lg q-py-sm">
-            <div class="text-h5">词组设置</div>
-            <div class="q-pa-md q-mt-lg">
-              <!-- 开关 -->
-              <div class="row items-center">
-                <q-toggle @update:model-value="((b: boolean) => handleToggleChange(b))" size="50px" color="active" dark
-                  keep-color v-model="settings.useDefaultWords"><span class="text-subtitle1">使用默认词组</span></q-toggle>
-                <q-icon size="20px" color="text" class="q-ml-xs cursor-pointer" name="info">
-                  <q-tooltip transition-show="scale" transition-hide="scale" class="text-btnText bg-active"
-                    anchor="top middle" self="bottom middle" :offset="[10, 10]">
-                    <b style="font-size: 13px">设置词组时注意词组间用 | 分隔；</b><br>
-                    <b style="font-size: 13px">在保存时会自动忽略重复词组</b>
-                  </q-tooltip>
-                </q-icon>
-                <span class="words-count q-ml-lg">共{{ [...new Set(calcString.split('|'))].filter(str => str.trim() !==
-                  '').length }}词</span>
-              </div>
-              <!-- 文本域 -->
-              <div class="q-mt-sm words-setting">
-                <q-input placeholder="请在此处输入自定义词组..." :disable="settings.useDefaultWords" color="active"
-                  input-class="words-input" v-model="calcString" autogrow outlined>
-                  <q-resize-observer @resize="handleTextAreaResize" />
-                </q-input>
-                <div class="row justify-end">
-                  <q-btn @click="saveSettings(settings)" :disable="settings.useDefaultWords" push
-                    class="q-mt-sm q-mr-sm" size="16px" color="active" text-color="btnText"><span
-                      class="q-px-md">保存</span></q-btn>
-                </div>
-              </div>
-            </div>
-
-            <q-separator class="q-my-xl divider" color="text" />
-            <!-- 计时模式 -->
-            <div class="text-h5 q-mt-xl">计时模式</div>
-            <div class="row q-pa-md q-mt-lg">
-              <div class="row items-center text-subtitle1 q-ml-sm" :class="isPhone ? 'col-12' : 'col-2'">默认生成词数</div>
-              <div class="col">
-                <q-option-group @update:model-value="((num: number) => handleWordsNumChange(num))"
-                  v-model="settings.generateWordsNum" :options="options" color="active" dark inline />
-              </div>
-            </div>
-            <q-separator class="q-my-xl divider" color="text" />
-            <!-- 限时模式 -->
-            <div class="text-h5">限时模式</div>
-            <div class="row q-pa-md q-mt-lg time-limit-setting">
-              <div class="row items-center text-subtitle1 q-ml-sm" :class="isPhone ? 'col-12' : 'col-2'">默认限定时长</div>
-              <div class="col row">
-                <q-input @blur="saveSettings(settings)" @keydown.enter="saveSettings(settings)" suffix="秒"
-                  input-class="time-input" v-model="limitTime" color="active" outlined></q-input>
-              </div>
-            </div>
-          </div>
+          <GeneralSetting/>
         </q-tab-panel>
 
         <q-tab-panel name="切换主题">
@@ -88,74 +27,7 @@
         </q-tab-panel>
 
         <q-tab-panel name="自定义主题">
-          <div class="q-px-lg q-py-sm">
-            <div class="text-h5 q-mb-xl">定制主题</div>
-            <div class="q-pa-md q-mt-lg row">
-              <!-- 示例 -->
-              <div class="col q-mx-lg q-pa-md example-container column justify-center"
-                :style="`background: ${customTheme.color.bg}`">
-                <!-- 计时模式 -->
-                <div class="row q-gutter-lg justify-center">
-                  <div class="column items-center word-block" :style="`color: ${customTheme.color.active}`">
-                    <div class="cn-word">示例</div>
-                    <div class="en-word">
-                      <code>shili</code>
-                    </div>
-                  </div>
-                  <div class="column items-center word-block" :style="`color: ${customTheme.color.error}`">
-                    <div class="cn-word">示例</div>
-                    <div class="en-word">
-                      <code>shili</code>
-                    </div>
-                  </div>
-                  <div class="column items-center word-block" :style="`color: ${customTheme.color.text}`">
-                    <div class="cn-word">示例</div>
-                    <div class="en-word" style="opacity: 0.5">
-                      <div class="caret waiting" :style="`background: ${customTheme.color.active}`"></div>
-                      <code>shili</code>
-                    </div>
-                  </div>
-                </div>
-                <!-- 限时模式 -->
-                <div class="q-my-md row q-gutter-md justify-center">
-                  <q-card class="column justify-center items-center shadow-3"
-                    :style="`color: ${customTheme.color.btnText};background: ${customTheme.color.active}`">
-                    <div>示例</div>
-                    <div>shili</div>
-                  </q-card>
-                  <q-card class="column justify-center items-center shadow-3"
-                    :style="`color: ${customTheme.color.btnText};background: ${customTheme.color.error}`">
-                    <div>示例</div>
-                    <div>shili</div>
-                  </q-card>
-                  <q-card class="column justify-center items-center shadow-3"
-                    :style="`color: ${customTheme.color.text}; background: ${customTheme.color.bg}`">
-                    <div>示例</div>
-                    <div>shili</div>
-                  </q-card>
-                </div>
-              </div>
-              <!-- 调色板 -->
-              <div class="column q-gutter-lg col-4 color-choose">
-                <div v-for="key in Object.keys(defaultColor)" class="row items-center">
-                  <Transition name="bot">
-                    <div v-if="customTheme.color[key]" class="color-bot q-mr-sm"
-                      :style='`background-color: ${customTheme.color[key]}`'></div>
-                  </Transition>
-                  <q-input input-class="theme-input" color="active" label-color="text" v-model="customTheme.color[key]"
-                    :label="colorDesc[key]" outlined>
-                    <template v-slot:append>
-                      <q-icon name="colorize" color="text" class="cursor-pointer">
-                        <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                          <q-color v-model="customTheme.color[key]" :default-value="defaultColor[key]" no-header-tabs />
-                        </q-popup-proxy>
-                      </q-icon>
-                    </template>
-                  </q-input>
-                </div>
-              </div>
-            </div>
-          </div>
+          <CustomTheme/>
         </q-tab-panel>
       </q-tab-panels>
     </template>
@@ -164,196 +36,35 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, nextTick, ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useSettingStore } from '@/stores/useSettingStore'
 import useTheme from '@/hooks/Setting/useTheme'
-import ThemeCard from '@/components/ThemeCard.vue'
-import type { Theme } from '@/types';
+import ThemeCard from '@/components/Setting/ThemeCard.vue'
+import SettingTree from '@/components/Setting/SettingTree.vue'
+import GeneralSetting from '@/components/Setting/GeneralSetting.vue'
+import CustomTheme from '@/components/Setting/CustomTheme.vue'
 
 // 获取store中的数据
-const { isPhone, settings, saveSettings } = useSettingStore()
+const { isPhone } = useSettingStore()
 
 // 获取主题数据
 const { themes, current, changeTheme } = useTheme()
 
-// 计算属性：文本域
-const calcString = computed({
-  get() {
-    return settings.useDefaultWords ? settings.wordsString : settings.customString
-  },
-  set(value) {
-    if (settings.useDefaultWords) {
-      settings.wordsString = value
-    } else {
-      settings.customString = value
-    }
-  }
-})
-
 // 切分窗口中线位置
 const splitterModel = ref(isPhone ? 30 : 20)
-// 默认选中
+
+// 当前选中树状图节点
 const selected = ref('通用')
-// 禁止切换的选项
-const disableOptions = ['设置', '主题']
-
-// 获取树状图ref
-const tree = ref()
-
-// 切换选项
-watch(selected, (n, o) => {
-  // 新选项为禁止切换的选项
-  if (disableOptions.includes(n)) {
-    // 修改当前选项为旧选项
-    selected.value = o
-    // 收缩对应折叠栏
-    const expanded = !tree.value.isExpanded(n)
-    tree.value.setExpanded(n, expanded)
-  }
-})
-
-
-
-// 树状选项
-const simple = ref([{
-  label: '设置',
-  icon: 'settings',
-  fontSize: '1.5rem',
-  iconSize: '2rem',
-  children: [
-    {
-      label: '通用',
-      icon: 'tune',
-      fontSize: '1rem',
-      iconSize: '1.4rem',
-    },
-    {
-      label: '主题',
-      icon: 'color_lens',
-      fontSize: '1rem',
-      iconSize: '1.4rem',
-      children: [
-        {
-          label: '切换主题',
-          icon: 'compare_arrows',
-          fontSize: '1rem',
-          iconSize: '1.4rem',
-        },
-        {
-          label: '自定义主题',
-          icon: 'colorize',
-          fontSize: '1rem',
-          iconSize: '1.4rem',
-        }
-      ]
-    }
-  ]
-}])
-
-// 选项
-const options = [
-  {
-    label: '20',
-    value: 20,
-  },
-  {
-    label: '30',
-    value: 30
-  },
-  {
-    label: '40',
-    value: 40
-  },
-  {
-    label: '50',
-    value: 50
-  }
-]
-
-
-/* 计时模式 */
-
-// 选项组变动
-function handleWordsNumChange(value: number) {
-  settings.generateWordsNum = value
-  // 更新配置项
-  saveSettings(settings)
-}
-// 开关变动
-function handleToggleChange(b: boolean) {
-  settings.useDefaultWords = b
-  // 更新配置项
-  saveSettings(settings)
-}
-
-// 文本域大小变动
-function handleTextAreaResize() {
-  // 通过修改文本域中的内容来唤起autogrow
-  if (settings.wordsString) {
-    settings.wordsString += ' '
-    nextTick(() => {
-      settings.wordsString = settings.wordsString.substring(0, settings.wordsString.length - 1)
-    })
-  }
-}
-
-/* 限时模式 */
-
-// 处理默认限定时间变动
-const limitTime = computed({
-  get() {
-    return settings.limitTime || 20
-  },
-  set(value) {
-    // 如果试图设置时长为非正数时，不修改设置中的值
-    if (value > 0) {
-      settings.limitTime = value
-    }
-  }
-})
-
-/* 自定义主题 */
-
-// 当前自定义的主题颜色
-const customTheme = ref<Theme>({
-  desc: '',
-  color: {
-    active: '',
-    error: '',
-    bg: '',
-    text: '',
-    btnText: ''
-  }
-}) as any
-// 自定义主题时默认的颜色
-const defaultColor = {
-  active: '#00aaff',
-  error: '#ff0000',
-  bg: '#ffffff',
-  text: '#000000',
-  btnText: '#ffffff'
-} as any
-const colorDesc = {
-  active: '主题颜色',
-  error: '错误颜色',
-  bg: '背景颜色',
-  text: '文字颜色',
-  btnText: '按钮文字颜色'
-} as any
 
 </script>
 
 <style lang="scss" scoped>
-// 左侧选项
+// 右侧背景
 .q-tab-panels {
   background-color: transparent;
 }
 
-// 次数统计
-.words-count {
-  opacity: .5;
 
-}
 
 // 设置中的分割线
 .divider {
@@ -361,144 +72,8 @@ const colorDesc = {
   height: 2px;
 }
 
-// 自定义主题
-.color-choose {
-  min-width: 150px;
-  transition: all .2s;
-
-  // 色块
-  .color-bot {
-    width: 56px;
-    height: 56px;
-    border-radius: 4px;
-    border: solid 1.5px $text;
-  }
-}
-
-// 自定义主题示例
-.example-container {
-  border: 1.5px solid;
-  border-radius: 8px;
-
-  // 词组
-  .word-block {
-
-    // 下方拼音
-    .en-word {
-      margin-top: -3px;
-
-      // 单个字母
-      code {
-        transition: 0.2s;
-        font-family: 'Consolas';
-        margin: 0 0.5px;
-        font-size: 22px;
-      }
-    }
-
-    // 上方汉字
-    .cn-word {
-      transition: 0.1s;
-      font-size: medium;
-      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
-    }
-
-    // 浮标
-    .caret {
-      display: block;
-      position: absolute;
-      width: 3px;
-      height: 28px;
-      border-radius: 10px;
-      transition: .2s ease-out;
-    }
-  }
-
-  // 示例卡片
-  .q-card {
-    width: 100px;
-    height: 100px;
-    transition: all 0.5s ease;
-    font-size: 1.2em;
-    border-radius: 10px;
-  }
-}
-
-// 右侧
+// 右侧整体
 .q-tab-panels.q-panel-parent {
   height: calc(100vh - 170px) !important;
-}
-</style>
-
-
-<style lang="scss">
-// 修改文本域样式
-.words-setting .words-input {
-  color: $text;
-  font-size: 18px;
-  line-height: 1.5 !important;
-  padding: 10px 0 !important;
-  letter-spacing: 2px;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
-}
-
-// 删除文本域的边框
-.words-setting .q-field__control::before {
-  border-color: transparent !important;
-}
-
-// 选型组
-.words-setting .q-radio__inner {
-  &:not(.q-radio__inner--truthy) {
-    color: $text
-  }
-
-}
-
-.q-radio--dark .q-radio__inner {
-  color: $text
-}
-
-// 左侧除active状态的节点添加透明度
-.setting-tree .q-tree__node--link {
-  &:not(.q-tree__node--selected) {
-    opacity: .8;
-  }
-}
-
-// 开关
-.words-setting .q-toggle__inner--falsy {
-  .q-toggle__thumb {
-    &::after {
-      border: solid 1px;
-    }
-  }
-}
-
-// 输入框
-.time-limit-setting {
-  .time-input {
-    width: 100px;
-    color: $text;
-    font-size: 2em;
-  }
-
-  // 删除输入框的边框
-  .q-field__control::before {
-    border: solid $text 2px !important;
-  }
-}
-
-.color-choose {
-
-  // 自定义主题输入框
-  .theme-input {
-    color: $text;
-  }
-
-  // 删除输入框的边框
-  .q-field__control::before {
-    border: solid $text 1.5px !important;
-  }
 }
 </style>
