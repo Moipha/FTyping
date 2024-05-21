@@ -59,7 +59,7 @@ jobs:
         with:
           message: "Update index.html and add compressed 404.html"
           push: true
-          github_token: ${{ secrets.ACTION_SECRET }}
+          github_token: ${{ secrets.ACTION_SECRET }} 
 
           
 
