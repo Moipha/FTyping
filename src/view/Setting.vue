@@ -16,18 +16,18 @@
       <q-tab-panels v-model="selected" animated transition-prev="slide-down" transition-next="slide-up"
         transition-duration="500">
         <q-tab-panel name="通用">
-          <GeneralSetting/>
+          <GeneralSetting />
         </q-tab-panel>
 
         <q-tab-panel name="切换主题">
           <div class="q-px-lg q-py-md row q-gutter-lg">
             <ThemeCard v-for="(value, key) in themes" :key="key" :themeKey="key" :value="value" :current="current"
-              :changeTheme="changeTheme"></ThemeCard>
+              :changeTheme="changeTheme" />
           </div>
         </q-tab-panel>
 
         <q-tab-panel name="自定义主题">
-          <CustomTheme/>
+          <CustomTheme />
         </q-tab-panel>
       </q-tab-panels>
     </template>
@@ -63,8 +63,6 @@ const selected = ref('通用')
 .q-tab-panels {
   background-color: transparent;
 }
-
-
 
 // 设置中的分割线
 .divider {
