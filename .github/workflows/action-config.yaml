@@ -56,9 +56,10 @@ jobs:
   
       - name: Commit and push changes
         run: | 
+          cd gh-pages
           git config --global user.email "chengfayang@henu.edu.cn"
           git config --global user.name "Moipha"
-          git add *
+          git add index.html 404.html
           git commit -m "Update index.html and add 404.html"
           git push origin gh-pages
         env:
