@@ -63,7 +63,7 @@ jobs:
           git commit -m "Update index.html and add 404.html"
           git push origin gh-pages
         env:
-          GITHUB_TOKEN: ${{ secrets.ACTION_SECRET }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
           
