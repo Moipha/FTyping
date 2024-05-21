@@ -57,9 +57,11 @@ jobs:
       - name: Commit and push changes
         uses: EndBug/add-and-commit@v9
         with:
+          author_name: "Moipha"
+          author_email: "chengfayang@henu.edu.cn"
           message: "Update index.html and add compressed 404.html"
           push: true
-          github_token: ${{ secrets.ACTION_SECRET }} 
+          github_token: ${{ secrets.ACTION_SECRET }}
 
           
 
