@@ -26,22 +26,23 @@ jobs:
         with:
           node-version: '18'  # 根据你的项目需求选择 Node.js 版本
 
-      - name: Build and Deploy
-        # 构建发布 Github pages
-        uses: JamesIves/github-pages-deploy-action@main
-        # 该步骤所需的环境变量
-        env:
-          ACCESS_TOKEN: ${{ secrets.ACTION_SECRET }}
-          # 在部署前要checkout的基本分支，默认是master
-          BASE_BRANCH: main # The branch the action should deploy from.
-          # 指定部署的分支，默认是 gh-pages 分支
-          BRANCH: gh-pages # The branch the action should deploy to.
-          # 存储库中要部署的文件夹。
-          # 该步骤会将项目中 FOLDER 指定文件夹下的文件推送到 BRANCH 分支，作为Github Pages 部署的内容。
-          # Vue CLI默认打包到 dist 目录
-          FOLDER: docs # The folder the action should deploy.
-          # 在向 BRANCH 分支推送代码前，可以指定构建脚本
-          BUILD_SCRIPT: npm install && npm run build # The build script the action should run prior to deploying.
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build the project
+        run: npm run build
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.ACTION_SECRET }}
+          publish_dir: ./docs  # 根据你的打包输出目录进行调整
+
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+          path: gh-pages
 
       - name: Modify index.html and add 404.html
         run: |
