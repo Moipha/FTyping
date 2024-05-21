@@ -55,13 +55,13 @@ jobs:
           echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Single Page Apps for GitHub Pages</title><script type="text/javascript">var pathSegmentsToKeep=0;var l=window.location;l.replace(l.protocol+\"//\"+l.hostname+(l.port?\":\"+l.port:\"\")+l.pathname.split(\"/\").slice(0,1+pathSegmentsToKeep).join(\"/\")+\"/?/\"+l.pathname.slice(1).split(\"/\").slice(pathSegmentsToKeep).join(\"/\").replace(/&/g,\"~and~\")+(l.search?\"&\"+l.search.slice(1).replace(/&/g,\"~and~\"):\"\")+l.hash);</script></head><body></body></html>' > 404.html
   
       - name: Commit and push changes
-        uses: EndBug/add-and-commit@v9
-        with:
-          author_name: "Moipha"
-          author_email: "chengfayang@henu.edu.cn"
-          message: "Update index.html and add compressed 404.html"
-          push: true
-          github_token: ${{ secrets.ACTION_SECRET }} 
+        run: |
+          git add index.html 404.html
+          git commit -m "Update index.html and add 404.html"
+          git push origin gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTION_SECRET }}
+
 
           
 
