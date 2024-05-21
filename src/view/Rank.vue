@@ -1,5 +1,5 @@
 <template>
-  <div>Rank</div>
+  <div>Rank</div>Github-Actions测试24
 </template>
 
 <script lang="ts" setup>
