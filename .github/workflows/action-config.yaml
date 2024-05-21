@@ -56,7 +56,7 @@ jobs:
   
       - name: Commit and push changes
         run: | 
-          git add index.html 404.html
+          git add index.html
           git commit -m "Update index.html and add 404.html"
           git push origin gh-pages
         env:
