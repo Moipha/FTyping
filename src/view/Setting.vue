@@ -1,6 +1,5 @@
 <template>
   <q-separator color="text" />
-
   <q-splitter :horizontal="isPhone" v-model="splitterModel" separator-style="background-color: var(--q-text)"
     style="height: calc(100vh - 170px)">
     <!-- 左侧 -->
