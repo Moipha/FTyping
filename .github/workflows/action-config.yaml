@@ -54,12 +54,14 @@ jobs:
           # 添加压缩后的 404.html 文件
           echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Single Page Apps for GitHub Pages</title><script type="text/javascript">var pathSegmentsToKeep=0;var l=window.location;l.replace(l.protocol+\"//\"+l.hostname+(l.port?\":\"+l.port:\"\")+l.pathname.split(\"/\").slice(0,1+pathSegmentsToKeep).join(\"/\")+\"/?/\"+l.pathname.slice(1).split(\"/\").slice(pathSegmentsToKeep).join(\"/\").replace(/&/g,\"~and~\")+(l.search?\"&\"+l.search.slice(1).replace(/&/g,\"~and~\"):\"\")+l.hash);</script></head><body></body></html>' > 404.html
   
-      - name: Commit and push changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v7
         with:
-          commit_message: "Update index.html and add compressed 404.html"
-          branch: gh-pages
-          file_pattern: docs/index.html, docs/404.html
+          author_name: "github-actions[bot]"
+          author_email: "github-actions[bot]@users.noreply.github.com"
+          message: "Update index.html and add compressed 404.html"
 
+      - name: Push changes
+        run: git push origin gh-pages
           
 
