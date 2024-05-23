@@ -86,14 +86,71 @@
 
 // 自定义主题色块
 
-.bot-move,
-.bot-enter-active,
-.bot-leave-active {
+.dot-move,
+.dot-enter-active,
+.dot-leave-active {
   transition: all 0.5s ease;
 }
 
-.bot-enter-from,
-.bot-leave-to {
+.dot-enter-from,
+.dot-leave-to {
   opacity: 0 !important;
   transform: translateX(-50px);
+}
+
+// 加载界面动画
+@keyframes loader {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(180deg);
+  }
+
+  50% {
+    transform: rotate(180deg);
+  }
+
+  75% {
+    transform: rotate(360deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+
+}
+@keyframes loader-inner {
+  0% {
+    height: 0%;
+  }
+
+  25% {
+    height: 0%;
+  }
+
+  50% {
+    height: 100%;
+  }
+
+  75% {
+    height: 100%;
+  }
+
+  100% {
+    height: 0%;
+  }
+
+}
+
+.loading-move,
+.loading-enter-active,
+.loading-leave-active {
+  transition: all 0.5s ease-in-out;
+}
+
+.loading-enter-from,
+.loading-leave-to {
+  opacity: 0 !important;
 }

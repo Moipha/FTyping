@@ -1,73 +1,80 @@
 <template>
     <div class="q-px-lg q-py-sm">
         <div class="text-h5 q-mb-xl">定制主题</div>
-        <div class="q-pa-md q-mt-lg row">
-            <!-- 示例 -->
-            <div class="col q-mx-lg q-pa-md example-container column justify-center"
-                :style="`background: ${customTheme.color.bg}`">
-                <!-- 计时模式 -->
-                <div class="row q-gutter-lg justify-center">
-                    <div class="column items-center word-block" :style="`color: ${customTheme.color.active}`">
-                        <div class="cn-word">示例</div>
-                        <div class="en-word">
-                            <code>shili</code>
+        <div class="q-pa-md q-mt-lg column">
+            <div class="row">
+                <!-- 示例 -->
+                <div class="col q-mx-lg q-pa-md example-container column justify-center"
+                    :style="`background: ${customTheme.color.bg}`">
+                    <!-- 计时模式 -->
+                    <div class="row q-gutter-lg justify-center">
+                        <div class="column items-center word-block" :style="`color: ${customTheme.color.active}`">
+                            <div class="cn-word">示例</div>
+                            <div class="en-word">
+                                <code>shili</code>
+                            </div>
+                        </div>
+                        <div class="column items-center word-block" :style="`color: ${customTheme.color.error}`">
+                            <div class="cn-word">示例</div>
+                            <div class="en-word">
+                                <code>shili</code>
+                            </div>
+                        </div>
+                        <div class="column items-center word-block" :style="`color: ${customTheme.color.text}`">
+                            <div class="cn-word">示例</div>
+                            <div class="en-word" style="opacity: 0.5">
+                                <div class="caret waiting" :style="`background: ${customTheme.color.active}`"></div>
+                                <code>shili</code>
+                            </div>
                         </div>
                     </div>
-                    <div class="column items-center word-block" :style="`color: ${customTheme.color.error}`">
-                        <div class="cn-word">示例</div>
-                        <div class="en-word">
-                            <code>shili</code>
-                        </div>
-                    </div>
-                    <div class="column items-center word-block" :style="`color: ${customTheme.color.text}`">
-                        <div class="cn-word">示例</div>
-                        <div class="en-word" style="opacity: 0.5">
-                            <div class="caret waiting" :style="`background: ${customTheme.color.active}`"></div>
-                            <code>shili</code>
-                        </div>
+                    <!-- 限时模式 -->
+                    <div class="q-my-md row q-gutter-md justify-center">
+                        <q-card class="column justify-center items-center shadow-3"
+                            :style="`color: ${customTheme.color.btnText};background: ${customTheme.color.active}`">
+                            <div>示例</div>
+                            <div>shili</div>
+                        </q-card>
+                        <q-card class="column justify-center items-center shadow-3"
+                            :style="`color: ${customTheme.color.btnText};background: ${customTheme.color.error}`">
+                            <div>示例</div>
+                            <div>shili</div>
+                        </q-card>
+                        <q-card class="column justify-center items-center shadow-3"
+                            :style="`color: ${customTheme.color.text}; background: ${customTheme.color.bg}`">
+                            <div>示例</div>
+                            <div>shili</div>
+                        </q-card>
                     </div>
                 </div>
-                <!-- 限时模式 -->
-                <div class="q-my-md row q-gutter-md justify-center">
-                    <q-card class="column justify-center items-center shadow-3"
-                        :style="`color: ${customTheme.color.btnText};background: ${customTheme.color.active}`">
-                        <div>示例</div>
-                        <div>shili</div>
-                    </q-card>
-                    <q-card class="column justify-center items-center shadow-3"
-                        :style="`color: ${customTheme.color.btnText};background: ${customTheme.color.error}`">
-                        <div>示例</div>
-                        <div>shili</div>
-                    </q-card>
-                    <q-card class="column justify-center items-center shadow-3"
-                        :style="`color: ${customTheme.color.text}; background: ${customTheme.color.bg}`">
-                        <div>示例</div>
-                        <div>shili</div>
-                    </q-card>
+                <!-- 调色板 -->
+                <div class="column q-gutter-lg col-4 color-choose">
+                    <div v-for="key in Object.keys(defaultColor)" class="row items-center">
+                        <Transition name="dot">
+                            <div v-if="customTheme.color[key]" class="color-dot q-mr-sm"
+                                :style='`background-color: ${customTheme.color[key]}`'></div>   
+                        </Transition>
+                        <q-input input-class="theme-input" color="active" label-color="text"
+                            v-model="customTheme.color[key]" :label="colorDesc[key]" outlined>
+                            <template v-slot:append>
+                                <q-icon name="colorize" color="text" class="cursor-pointer">
+                                    <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                                        <q-color v-model="customTheme.color[key]" :default-value="defaultColor[key]"
+                                            no-header-tabs />
+                                    </q-popup-proxy>
+                                </q-icon>
+                            </template>
+                        </q-input>
+                    </div>
                 </div>
             </div>
-            <!-- 调色板 -->
-            <div class="column q-gutter-lg col-4 color-choose">
-                <div v-for="key in Object.keys(defaultColor)" class="row items-center">
-                    <Transition name="bot">
-                        <div v-if="customTheme.color[key]" class="color-bot q-mr-sm"
-                            :style='`background-color: ${customTheme.color[key]}`'></div>
-                    </Transition>
-                    <q-input input-class="theme-input" color="active" label-color="text"
-                        v-model="customTheme.color[key]" :label="colorDesc[key]" outlined>
-                        <template v-slot:append>
-                            <q-icon name="colorize" color="text" class="cursor-pointer">
-                                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                                    <q-color v-model="customTheme.color[key]" :default-value="defaultColor[key]"
-                                        no-header-tabs />
-                                </q-popup-proxy>
-                            </q-icon>
-                        </template>
-                    </q-input>
-                </div>
+            <div class="row justify-start q-ml-lg q-mt-md btn-group">
+                <q-btn class="q-mr-sm" icon="save" label="保存" size="16px" color="active" text-color="btnText" push></q-btn>
+                <q-btn class="q-mr-sm" icon="check_circle" label="应用" size="16px" color="active" text-color="btnText" push></q-btn>
+                <q-btn class="q-mr-sm" icon="dashboard" label="添加至主题列表" size="16px" color="active" text-color="btnText" push></q-btn>
             </div>
+        </div> 
 
-        </div>
     </div>
 </template>
 
@@ -112,7 +119,7 @@ const colorDesc = {
     transition: all .2s;
 
     // 色块
-    .color-bot {
+    .color-dot {
         width: 56px;
         height: 56px;
         border-radius: 4px;
@@ -145,7 +152,7 @@ const colorDesc = {
         .cn-word {
             transition: 0.1s;
             font-size: medium;
-            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
+            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Rodoto, Helvetica Neue, Arial, Noto Sans, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", Segoe UI Symbol, "Noto Color Emoji";
         }
 
         // 浮标
@@ -166,6 +173,13 @@ const colorDesc = {
         transition: all 0.5s ease;
         font-size: 1.2em;
         border-radius: 10px;
+    }
+}
+
+// 按钮样式
+.btn-group{
+    .q-btn{
+        font-weight: bold;
     }
 }
 </style>

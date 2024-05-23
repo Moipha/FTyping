@@ -71,6 +71,6 @@ const selected = ref('通用')
 
 // 右侧整体
 .q-tab-panels.q-panel-parent {
-  height: calc(100vh - 170px) !important;
+  height: 100%;
 }
 </style>
