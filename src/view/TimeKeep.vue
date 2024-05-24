@@ -110,7 +110,6 @@ nextTick(() => {
 onMounted(() => {
   // 监听屏幕改动，实时调整浮标位置
   window.addEventListener('resize', handleTyping)
-
   // 监听索引变化，变化后定位浮标
   watch(curIndex, () => {
     handleTyping()

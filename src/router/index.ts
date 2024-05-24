@@ -1,5 +1,4 @@
-import emitter from '@/utils/emitter';
-import { ref } from 'vue';
+import emitter from '@/utils/emitter'
 import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -12,11 +11,11 @@ const router = createRouter({
     },
     {
       path: '/time-keep',
-      component: () => import('@/view/TimeKeep.vue'),
+      component: () => import('@/view/TimeKeep.vue')
     },
     {
       path: '/time-limit',
-      component: () => import('@/view/TimeLimit.vue'),
+      component: () => import('@/view/TimeLimit.vue')
     },
     {
       path: '/setting',
@@ -30,19 +29,19 @@ const router = createRouter({
 })
 
 // 创建一个全局状态来管理首次访问状态
-const visitedRoutes = ref(new Set())
+const visitedRoutes = new Set()
 
 // 路由守卫
 router.beforeEach((to, from, next) => {
-  if (!visitedRoutes.value.has(to.path)) {
+  if (!visitedRoutes.has(to.path)) {
     emitter.emit('loading', true)
   }
   next()
 })
 
 router.afterEach((to) => {
-  if (!visitedRoutes.value.has(to.path)) {
-    visitedRoutes.value.add(to.path)
+  if (!visitedRoutes.has(to.path)) {
+    visitedRoutes.add(to.path)
     emitter.emit('loading', false)
   }
 })

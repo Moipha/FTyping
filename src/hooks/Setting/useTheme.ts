@@ -8,15 +8,22 @@ export default function () {
     const current = ref('vue')
 
     // 获取当前主题
-    localStorage.getItem('theme')
-    const theme = localStorage.getItem('theme') ? JSON.parse(localStorage.getItem('theme') as string) : null
+    const localTheme = localStorage.getItem('theme')
+
+    const theme = localTheme ? JSON.parse(localTheme as string) : null
     if (theme) {
         current.value = theme.name
     }
+    // 获取自定义主题
+    const localCustom = localStorage.getItem('custom-theme')
 
+    const customTheme = localCustom ? JSON.parse(localCustom as string) : null
     // 可选的主题
     const themes: { [key: string]: Theme } = {
         ...ts
+    }
+    if (localCustom) {
+        themes['custom'] = { desc: '自定义主题', color: customTheme }
     }
 
     // 切换至指定主题

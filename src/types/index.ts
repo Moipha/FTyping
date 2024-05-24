@@ -45,14 +45,17 @@ export interface Theme {
     // 主题描述
     desc: string
     // 主题颜色
-    color: {
-        active: string
-        error: string
-        bg: string
-        text: string
-        btnText: string
-    }
+    color: Color
 }
+// 单个主题
+export interface Color {
+    active: string
+    error: string
+    bg: string
+    text: string
+    btnText: string
+}
+
 
 // 限时模式中已输入的卡片对象
 export interface WordCard {
