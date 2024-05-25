@@ -4,7 +4,7 @@
         <div class="q-pa-md q-mt-lg row">
             <!-- 示例 -->
             <div class="col q-mx-lg q-pa-md example-container column justify-center"
-                :style="`background: ${customTheme.color.bg}`">
+                :style="`background: ${customTheme.color.bg};color: ${customTheme.color.text}`">
                 <!-- 计时模式 -->
                 <div class="row q-gutter-lg justify-center">
                     <div class="column items-center word-block" :style="`color: ${customTheme.color.active}`">
@@ -45,6 +45,9 @@
                         <div>shili</div>
                     </q-card>
                 </div>
+                <div v-if="current === 'custom'" class="checked-icon">
+                    <q-icon name="check_circle_outline" size="3rem" class="q-ma-sm"></q-icon>
+                </div>
             </div>
             <!-- 调色板 -->
             <div class="column q-gutter-lg col-4 color-choose">
@@ -68,31 +71,51 @@
                     </div>
                 </div>
             </div>
-            <!-- 按钮组 -->
-            <div class="row justify-start q-ml-lg q-mt-lg btn-group">
-                <q-btn @click="saveTheme" class="q-mr-sm" icon="save" label="保存" size="16px" color="active"
-                    text-color="btnText" push></q-btn>
-                <q-btn @click="useCustom" class="q-mr-sm" icon="check_circle" label="应用" size="16px" color="active"
-                    text-color="btnText" push></q-btn>
-                <q-btn @click="addToTL" class="q-mr-sm" icon="dashboard" label="添加至主题列表" size="16px" color="active"
-                    text-color="btnText" push></q-btn>
-            </div>
         </div>
-
+        <!-- 按钮组 -->
+        <div class="row justify-start q-ml-lg q-mt-md btn-group">
+            <q-btn @click="saveTheme" class="q-mr-sm q-ml-md" icon="save" label="保存" size="16px" color="active"
+                text-color="btnText" push></q-btn>
+            <q-btn @click="useCustom" class="q-mr-sm" icon="check_circle" label="应用" size="16px" color="active"
+                text-color="btnText" push></q-btn>
+            <q-btn @click="addToTL" icon="dashboard" label="添加至主题列表" size="16px" color="active" text-color="btnText"
+                push></q-btn>
+        </div>
     </div>
+    <!-- 弹窗 -->
+    <q-dialog v-model="dialog" persistent>
+        <q-card style="min-width: 350px;background-color: var(--q-bg)">
+            <q-card-section>
+                <div class="text-h6">为该主题命名</div>
+            </q-card-section>
+
+            <q-card-section class="q-pt-none">
+                <q-input input-class="theme-input" color="active" dense v-model="themeName" autofocus
+                    @keyup.enter="dialog = false" :rules="[val => checkThemeName(val) || '已存在该名称的主题！']" />
+            </q-card-section>
+
+            <q-card-actions align="right" class="text-primary">
+                <q-btn color="error" flat label="算了" v-close-popup />
+                <q-btn @click="addTheme" color="active" flat label="确定" />
+            </q-card-actions>
+        </q-card>
+    </q-dialog>
 </template>
 
 <script lang="ts" setup>
 import type { Theme } from '@/types'
 import { ref, watch } from 'vue'
-import { useQuasar } from 'quasar'
-import useTheme from '@/hooks/Setting/useTheme'
+import { setCssVar, useQuasar } from 'quasar'
+import { useThemeStore } from '@/stores/useThemeStore'
+import ts from '@/config/themes'
+import { storeToRefs } from 'pinia'
+
+// 获取刷新主题列表函数
+const { refreshThemeList } = useThemeStore()
+const { current } = storeToRefs(useThemeStore())
 
 // 获取quasar内置插件
 const $q = useQuasar()
-
-// 获取切换主题的方法
-const {changeTheme} = useTheme()
 
 // 获取本地内存的自定义主题
 const ct = localStorage.getItem('custom-theme') ? JSON.parse(localStorage.getItem('custom-theme') as string) : {
@@ -101,7 +124,8 @@ const ct = localStorage.getItem('custom-theme') ? JSON.parse(localStorage.getIte
 // 当前自定义的主题颜色
 const customTheme = ref<Theme>({
     desc: '',
-    color: ct
+    color: ct,
+    name: 'custom'
 }) as any
 
 // 监听五个颜色属性，如果不为空移除shake样式
@@ -131,41 +155,43 @@ const colorDesc = {
 
 // 保存当前主题
 function saveTheme() {
-    // 校验是否符合
-    const checkResult = checkBeforeSave(customTheme.value)
-    if (!checkResult) {
-        // 保存
-        localStorage.setItem('custom-theme', JSON.stringify(customTheme.value.color))
-        // 弹窗提示
-        $q.notify({
-            type: 'positive',
-            message: '当前主题已保存！',
-            position: 'bottom-right',
-            timeout: 2000
-        })
-    } else {
-        // 给不通过的输入框添加样式
-        colorInputRefs[checkResult].classList.remove('shake')
-        void colorInputRefs[checkResult].offsetWidth
-        colorInputRefs[checkResult].classList.add('shake')
-        // 弹窗提示
-        $q.notify({
-            type: 'negative',
-            message: `请确定${colorDesc[checkResult]}！`,
-            position: 'bottom-right',
-            timeout: 2000
-        })
-    }
+    // 保存
+    localStorage.setItem('custom-theme', JSON.stringify(customTheme.value.color))
+    // 弹窗提示
+    $q.notify({
+        type: 'positive',
+        message: '当前主题已保存！',
+        position: 'bottom-right',
+        timeout: 2000
+    })
 }
 
 // 检查是否可以保存
-function checkBeforeSave(theme: Theme): string {
-    for (const [key, value] of Object.entries(theme.color)) {
+function checkBeforeSave() {
+    let canSave = ''
+    for (const [key, value] of Object.entries(customTheme.value.color).reverse()) {
         if (value === '') {
-            return key
+            canSave = key
         }
     }
-    return ''
+    // 校验是否符合
+    if (!Boolean(canSave)) {
+        // 保存
+        localStorage.setItem('custom-theme', JSON.stringify(customTheme.value.color))
+    } else {
+        // 给不通过的输入框添加样式
+        colorInputRefs[canSave].classList.remove('shake')
+        void colorInputRefs[canSave].offsetWidth
+        colorInputRefs[canSave].classList.add('shake')
+        // 弹窗提示
+        $q.notify({
+            type: 'negative',
+            message: `请确定${colorDesc[canSave]}！`,
+            position: 'bottom-right',
+            timeout: 2000
+        })
+    }
+    return !Boolean(canSave)
 }
 
 // 移除当前shake样式
@@ -185,11 +211,80 @@ const setColorInputRef = (el: HTMLElement, color: string) => {
 
 // 使用当前主题
 function useCustom() {
-    changeTheme('custom')
+    // 先保存
+    if (checkBeforeSave()) {
+        // 设置css变量
+        Object.entries(customTheme.value.color).forEach(([key, value]) => {
+            setCssVar(key as keyof Theme, value as string)
+        })
+        // 修改当前主题名
+        current.value = customTheme.value.name
+        // 保存至本地内存
+        localStorage.setItem('theme', JSON.stringify(customTheme.value))
+    }
 }
-// 添加自定义主题至主题列表
-function addToTL() {
+// 弹窗
+const dialog = ref(false)
+// 弹窗中的主题名
+const themeName = ref('')
 
+// 点击添加按钮
+function addToTL() {
+    // 先保存
+    if (checkBeforeSave()) {
+        // 打开弹窗填写主题名称
+        themeName.value = ''
+        dialog.value = true
+    }
+}
+// 获取当前主题列表
+const localList = localStorage.getItem('custom-theme-list')
+const themeList = localList ? JSON.parse(localList) : {}
+
+// 添加自定义主题至主题列表
+function addTheme() {
+    if (checkThemeName(themeName.value)) {
+        // 添加当前主题
+        themeList[themeName.value] = customTheme.value
+        // 保存主题列表
+        localStorage.setItem('custom-theme-list', JSON.stringify(themeList))
+
+        // 弹窗提示
+        $q.notify({
+            type: 'positive',
+            message: `已将主题 [${themeName.value}] 添加至主题列表中`,
+            position: 'bottom-right',
+            timeout: 2000
+        })
+
+        // 清除当前自定义主题
+        localStorage.removeItem('custom-theme')
+        customTheme.value.color = { active: '', error: '', bg: '', text: '', btnText: '' }
+
+        // 刷新当前主题列表
+        refreshThemeList()
+
+        // 转移check图标
+        if (current.value === 'custom') {
+            current.value = themeName.value
+        }
+
+        // 关闭弹窗
+        dialog.value = false
+    }
+}
+
+// 检查主题名称是否合法
+function checkThemeName(name: string) {
+    // 初始提供主题名不冲突
+    if (Object.keys(ts).includes(name)) {
+        return false
+    }
+    // 自定义主题列表中主题名不冲突
+    if (Object.keys(themeList).includes(name)) {
+        return false
+    }
+    return true
 }
 
 </script>
@@ -256,6 +351,15 @@ function addToTL() {
         font-size: 1.2em;
         border-radius: 10px;
     }
+
+    // 图标
+    .checked-icon {
+        height: 0;
+
+        .q-icon {
+            float: inline-end;
+        }
+    }
 }
 
 // 按钮样式
@@ -266,12 +370,12 @@ function addToTL() {
 }
 </style>
 <style lang="scss">
-.color-choose {
+// 自定义主题输入框
+.theme-input {
+    color: $text;
+}
 
-    // 自定义主题输入框
-    .theme-input {
-        color: $text;
-    }
+.color-choose {
 
     // 删除输入框的边框
     .q-field__control::before {

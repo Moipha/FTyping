@@ -1,9 +1,10 @@
+import { defineStore } from "pinia"
 import type { Theme } from "@/types"
 import { setCssVar } from "quasar"
 import { ref } from "vue"
 import ts from "@/config/themes"
 
-export default function () {
+export const useThemeStore = defineStore('theme', () => {
     // 当前主题; 默认主题为为vue
     const current = ref('vue')
 
@@ -14,26 +15,26 @@ export default function () {
     if (theme) {
         current.value = theme.name
     }
-    // 获取自定义主题
-    const localCustom = localStorage.getItem('custom-theme')
-
-    const customTheme = localCustom ? JSON.parse(localCustom as string) : null
     // 可选的主题
-    const themes: { [key: string]: Theme } = {
-        ...ts
+    let themes = ref<{ [key: string]: Theme }>({ ...ts })
+
+    // 重新获取自定义列表
+    function refreshThemeList() {
+        // 获取自定义主题列表
+        const localCustomTL = localStorage.getItem('custom-theme-list')
+        const themeList = localCustomTL ? JSON.parse(localCustomTL as string) : {}
+        themes.value = { ...ts, ...themeList }
     }
-    if (localCustom) {
-        themes['custom'] = { desc: '自定义主题', color: customTheme }
-    }
+    refreshThemeList()
 
     // 切换至指定主题
     function changeTheme(themeName: string) {
-        if (!(themeName in themes)) {
+        if (!(themeName in themes.value)) {
             console.error(`要切换的主题${themeName}不存在`)
             return
         }
         // 获取主题对象
-        const theme = themes[themeName]
+        const theme = themes.value[themeName]
         // 设置css变量
         Object.entries(theme.color).forEach(([key, value]) => {
             setCssVar(key as keyof Theme, value)
@@ -46,6 +47,6 @@ export default function () {
         localStorage.setItem('theme', JSON.stringify(save))
 
     }
+    return { changeTheme, refreshThemeList, themes, current }
 
-    return { changeTheme, themes, current }
-}
+})

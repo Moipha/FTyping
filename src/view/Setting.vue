@@ -37,23 +37,30 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import { useSettingStore } from '@/stores/useSettingStore'
-import useTheme from '@/hooks/Setting/useTheme'
 import ThemeCard from '@/components/Setting/ThemeCard.vue'
 import SettingTree from '@/components/Setting/SettingTree.vue'
 import GeneralSetting from '@/components/Setting/GeneralSetting.vue'
 import CustomTheme from '@/components/Setting/CustomTheme.vue'
+import { useThemeStore } from '@/stores/useThemeStore'
+import { storeToRefs } from 'pinia'
 
 // 获取store中的数据
 const { isPhone } = useSettingStore()
 
 // 获取主题数据
-const { themes, current, changeTheme } = useTheme()
+const { changeTheme } = useThemeStore()
+const { themes, current } = storeToRefs(useThemeStore())
 
 // 切分窗口中线位置
 const splitterModel = ref(isPhone ? 30 : 20)
 
 // 当前选中树状图节点
 const selected = ref('通用')
+
+// 修改当前主题名
+function changeCurrent(name: string) {
+  current.value = name
+}
 
 </script>
 

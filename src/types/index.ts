@@ -46,6 +46,8 @@ export interface Theme {
     desc: string
     // 主题颜色
     color: Color
+    // 主题名
+    name?: string
 }
 // 单个主题
 export interface Color {

@@ -45,5 +45,15 @@ export default {
             btnText: '#ffffff',
             bg: '#92C8E9'
         }
+    },
+    grey: {
+        desc: '测试3',
+        color:{
+            active: '#17516e',
+            error: '#9e0000',
+            bg: '#cfcfcf',
+            text: '#000000',
+            btnText: '#ffffff'
+        }
     }
 }
