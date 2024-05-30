@@ -17,5 +17,6 @@ import Header from './Header.vue'
     color: $text;
     transition: 0.5s;
     height: 100vh;
+    padding-left: calc(100vw - 100%) !important;
 }
 </style>

@@ -109,19 +109,19 @@ function getCardClass(index: number, card: WordCard) {
 </script>
 
 <style lang="scss" scoped>
-
 // 卡片
 .card-container {
   gap: 40px;
   width: 1000px;
   height: 300px;
-
+  overflow-x: hidden;
+   
   .q-card {
     width: 180px;
     height: 180px;
     background-color: $bg;
     color: $text;
-    opacity: .5;
+    opacity: .5;   
     transition: all 0.5s ease;
     font-size: 1.4em;
     border-radius: 20px;
@@ -221,7 +221,6 @@ function getCardClass(index: number, card: WordCard) {
 
   }
 }
-
 </style>
 <style lang="scss">
 // 输入框
