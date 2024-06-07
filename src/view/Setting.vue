@@ -19,8 +19,8 @@
         </q-tab-panel>
 
         <q-tab-panel name="切换主题">
-          <div class="q-px-lg q-py-md row q-gutter-lg">
-            <ThemeCard v-for="(value, key) in themes" :key="key" :themeKey="key" :value="value" :current="current"
+          <div class="q-px-xl q-py-md row q-gutter-lg">
+            <ThemeCard class="q-ma-md" v-for="(value, key) in themes" :key="key" :themeKey="key" :value="value" :current="current"
               :changeTheme="changeTheme" />
           </div>
         </q-tab-panel>
@@ -56,11 +56,6 @@ const splitterModel = ref(isPhone ? 30 : 20)
 
 // 当前选中树状图节点
 const selected = ref('通用')
-
-// 修改当前主题名
-function changeCurrent(name: string) {
-  current.value = name
-}
 
 </script>
 

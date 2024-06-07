@@ -1,6 +1,6 @@
 <template>
     <q-card @click="changeTheme(themeKey as string)" flat>
-        <div class="card-inner">
+        <div @contextmenu="rotateToBack" class="card-inner" :class="isBack ? 'show-back' : ''">
             <!-- 正面 -->
             <div class="front shadow-5" :style='`background-color: ${value.color.bg};color: ${value.color.active}`'>
                 {{ themeKey }}
@@ -9,12 +9,8 @@
                 </div>
             </div>
             <!-- 背面 -->
-            <div class="back shadow-5 column justify-center"
+            <div class="back column justify-center shadow-5"
                 :style='`background: linear-gradient(to bottom right ,${value.color.bg}, ${value.color.active})`'>
-                <!-- 主题描述 -->
-                <!-- <div class="q-mb-sm"
-                    :style='`color: ${value.color.active};text-shadow:  -1px -1px 0 ${value.color.bg},  1px -1px 0 ${value.color.bg},-1px  1px 0 ${value.color.bg}, 1px  1px 0 ${value.color.bg}; `'>
-                    {{ value.desc }}</div> -->
                 <!-- 颜色列表 -->
                 <div class="row items-center q-px-xl" v-for="(v, k) in value.color" :style='`color: ${v}`'>
                     <div class="color-square" :style='`background-color: ${v}`'></div>
@@ -27,9 +23,19 @@
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue'
+
 
 // 接收父组件传来的数据
 defineProps(['themeKey', 'value', 'current', 'changeTheme'])
+
+// 控制卡片是否反转
+const isBack = ref(false)
+
+// 右键点击卡片反转
+function rotateToBack() {
+    isBack.value = !isBack.value
+}
 
 </script>
 
@@ -99,18 +105,12 @@ defineProps(['themeKey', 'value', 'current', 'changeTheme'])
         }
     }
 
-    // 鼠标悬停时翻转
-    &:hover .card-inner {
-        transform: rotateY(180deg);
-        transition-delay: .4s;
-    }
-
     &:hover {
-        transform: translateY(5px);
+        transform: scale(1.03);
     }
+}
 
-    &:active {
-        transform: translateY(10px);
-    }
+.show-back {
+    transform: rotateY(180deg);
 }
 </style>

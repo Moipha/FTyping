@@ -112,9 +112,9 @@ function getCardClass(index: number, card: WordCard) {
 // 卡片
 .card-container {
   gap: 40px;
-  width: 1000px;
   height: 300px;
-  overflow-x: hidden;
+  overflow: hidden;
+  margin-top: 5%;
    
   .q-card {
     width: 180px;

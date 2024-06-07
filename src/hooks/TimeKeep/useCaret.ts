@@ -53,8 +53,7 @@ export default function (
         const caretTop = target.offsetTop + target.offsetHeight / 2 - caretElement.offsetHeight / 2
         // 定位至右侧计算中需考虑自身宽度
         const caretLeft = target.offsetLeft + (onLeft ? 0 : target.offsetWidth)
-        caretElement.style.top = `${caretTop}px`
-        caretElement.style.left = `${caretLeft}px`
+        caretElement.style.transform = `translate(${caretLeft}px, ${caretTop}px)`
     }
 
     return { handleTyping }

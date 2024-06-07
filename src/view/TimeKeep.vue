@@ -7,8 +7,8 @@
         <span @click="chooseNum(num)" :class="curNum == num ? 'correct' : ''" class="num-chooser-num">{{ num }}</span>
       </span>
     </div>
-    <div v-show="!showResult" class="items-center column">
-      <div ref="blocksContainer" @focus="startTyping" @blur="endTyping" @keydown="typing" @click="handleTyping"
+    <div v-show="!showResult" class="items-center column q-mt-xl">
+      <div ref="blocksContainer" @keydown.space.prevent @focus="startTyping" @blur="endTyping" @keydown="typing" @click="handleTyping"
         tabindex="0" class="row words-container">
         <div ref="caret" class="caret"></div>
         <div :ref="(el) => setBlockRef(el as HTMLElement, index)" v-for="(word, index) in words" :key="index"
@@ -29,7 +29,7 @@
       </div>
     </div>
     <Transition name="result">
-      <div v-show="showResult" class="result items-center column">
+      <div v-show="showResult" class="result items-center column q-mt-xl">
         <div class="row justify-around result-item-container">
           <div class="result-item">
             <div class="result-key row items-center">WPM
@@ -155,6 +155,8 @@ onBeforeUnmount(() => {
   .caret {
     display: block;
     position: absolute;
+    left: 0;
+    top: 0;
     width: 3px;
     height: 28px;
     background-color: $active;

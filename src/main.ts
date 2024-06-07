@@ -17,3 +17,8 @@ app.use(createPinia())
 app.use(router)
 
 app.mount('#app')
+
+/* 禁用右键弹窗 */
+document.oncontextmenu = function () {
+    return false;
+}
