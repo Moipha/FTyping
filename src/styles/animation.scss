@@ -20,7 +20,7 @@
   }
 
   100% {
-    opacity: .5;
+    opacity: 0.5;
   }
 }
 
@@ -111,7 +111,6 @@
   100% {
     transform: rotate(360deg);
   }
-
 }
 
 @keyframes loader-inner {
@@ -134,7 +133,6 @@
   100% {
     height: 0%;
   }
-
 }
 
 .loading-move,
@@ -147,7 +145,6 @@
 .loading-leave-to {
   opacity: 0 !important;
 }
-
 
 // 自定义主题保存抖动动画
 @keyframes shake {

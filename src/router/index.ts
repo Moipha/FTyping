@@ -24,8 +24,8 @@ const router = createRouter({
     {
       path: '/rank',
       component: () => import('@/view/Rank.vue')
-    },
-  ],
+    }
+  ]
 })
 
 // 创建一个全局状态来管理首次访问状态

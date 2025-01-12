@@ -12,9 +12,7 @@ export default defineConfig({
   build: {
     outDir: 'docs'
   },
-  plugins: [
-    vue(),
-  ],
+  plugins: [vue()],
   resolve: {
     alias: {
       // 定义src目录的路径别名为@

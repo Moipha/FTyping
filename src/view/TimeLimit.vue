@@ -3,8 +3,12 @@
     <!-- 词组卡片 -->
     <div class="q-mt-sm q-mb-xl row card-container items-center">
       <TransitionGroup name="card" appear>
-        <q-card v-for="(card, index) in cards" :key="card.id" :class="getCardClass(index, card)"
-          class="column justify-center items-center shadow-5">
+        <q-card
+          v-for="(card, index) in cards"
+          :key="card.id"
+          :class="getCardClass(index, card)"
+          class="column justify-center items-center shadow-5"
+        >
           <div>{{ card.cn }}</div>
           <div>{{ card.en }}</div>
         </q-card>
@@ -16,14 +20,25 @@
         <div>
           <div class="time-limit shadow-3" :class="status ? '' : 'wrong'">{{ formatTime }}</div>
           <q-popup-edit class="popup" v-model="timeLimit" auto-save v-slot="scope">
-            <q-input color="active" placeholder="限时时长(单位: 秒)" v-model="scope.value" autofocus
-              @keyup.enter="scope.set" />
+            <q-input
+              color="active"
+              placeholder="限时时长(单位: 秒)"
+              v-model="scope.value"
+              autofocus
+              @keyup.enter="scope.set"
+            />
           </q-popup-edit>
         </div>
       </div>
       <div class="input-container shadow-3">
-        <q-input ref="inputRef" :disable="!status" v-model="input" @keydown="handleTyping" input-class="input"
-          borderless />
+        <q-input
+          ref="inputRef"
+          :disable="!status"
+          v-model="input"
+          @keydown="handleTyping"
+          input-class="input"
+          borderless
+        />
       </div>
       <div class="col row justify-start">
         <div class="btn-container shadow-3">
@@ -45,11 +60,16 @@
         <div v-if="!status" class="row item-container">
           <div class="result-item col">
             <q-card class="col shadow-3 correct row justify-center">
-              <q-expansion-item header-class="expansion" class="fit"
-                :label='`正确 ${result.correctWords.length.toString()}`'>
+              <q-expansion-item
+                header-class="expansion"
+                class="fit"
+                :label="`正确 ${result.correctWords.length.toString()}`"
+              >
                 <div class="row expansion-container">
-                  <q-card v-for="word in result.correctWords"
-                    class="shadow-3 correct-card column justify-center items-center result-block">
+                  <q-card
+                    v-for="word in result.correctWords"
+                    class="shadow-3 correct-card column justify-center items-center result-block"
+                  >
                     <div>{{ word.cn }}</div>
                     <div>{{ word.typing }}</div>
                   </q-card>
@@ -59,11 +79,16 @@
           </div>
           <div class="result-item col">
             <q-card class="col shadow-3 wrong row justify-center">
-              <q-expansion-item header-class="expansion" class="fit"
-                :label='`错误 ${result.wrongWords.length.toString()}`'>
+              <q-expansion-item
+                header-class="expansion"
+                class="fit"
+                :label="`错误 ${result.wrongWords.length.toString()}`"
+              >
                 <div class="row expansion-container">
-                  <q-card v-for="word in result.wrongWords"
-                    class="shadow-3 wrong-card column justify-center items-center result-block">
+                  <q-card
+                    v-for="word in result.wrongWords"
+                    class="shadow-3 wrong-card column justify-center items-center result-block"
+                  >
                     <div>{{ word.cn }}</div>
                     <div>{{ word.typing }}</div>
                   </q-card>
@@ -82,7 +107,6 @@ import type { WordCard } from '@/types'
 import useTime from '@/hooks/TimeLimit/useTime'
 
 const { cards, status, formatTime, timeLimit, input, inputRef, result, handleTyping, restart } = useTime()
-
 
 // 动态属性
 function getCardClass(index: number, card: WordCard) {
@@ -104,8 +128,6 @@ function getCardClass(index: number, card: WordCard) {
 
   return result
 }
-
-
 </script>
 
 <style lang="scss" scoped>
@@ -115,13 +137,13 @@ function getCardClass(index: number, card: WordCard) {
   height: 300px;
   overflow: hidden;
   margin-top: 5%;
-   
+
   .q-card {
     width: 180px;
     height: 180px;
     background-color: $bg;
     color: $text;
-    opacity: .5;   
+    opacity: 0.5;
     transition: all 0.5s ease;
     font-size: 1.4em;
     border-radius: 20px;
@@ -139,7 +161,7 @@ function getCardClass(index: number, card: WordCard) {
   .edge-card {
     height: 120px;
     width: 120px;
-    opacity: .2;
+    opacity: 0.2;
     font-size: 1em;
   }
 }
@@ -160,7 +182,7 @@ function getCardClass(index: number, card: WordCard) {
   border-radius: 10px;
   padding: 8px 0;
   margin: 0 10px;
-  transition: .4s ease;
+  transition: 0.4s ease;
   border: solid 3px transparent;
 
   .q-input {
@@ -218,7 +240,6 @@ function getCardClass(index: number, card: WordCard) {
         padding: 5px;
       }
     }
-
   }
 }
 </style>
@@ -237,7 +258,6 @@ function getCardClass(index: number, card: WordCard) {
   font-size: 2em;
   border-radius: 10px;
 }
-
 
 // 弹出代理样式
 .popup {

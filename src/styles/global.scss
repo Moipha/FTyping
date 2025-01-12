@@ -1,115 +1,116 @@
 @import './animation.scss';
 
-
 * {
-    margin: 0;
-    padding: 0;
-    user-select: none;
-    scroll-behavior: smooth;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  scroll-behavior: smooth;
 }
 
 body {
-    background-color: $bg;
-    color: $text;
-    transition: background 0.2s, color 0.2s;
+  background-color: $bg;
+  color: $text;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 
 /* 计时模式样式 */
 .hide {
-    display: none !important;
+  display: none !important;
 }
 
 .waiting {
-    animation: shining 1s infinite;
+  animation: shining 1s infinite;
 }
 
 .wrong {
-    color: $error;
-    opacity: 1 !important;
+  color: $error;
+  opacity: 1 !important;
 }
 
 .correct {
-    color: $active;
-    opacity: 1 !important;
+  color: $active;
+  opacity: 1 !important;
 }
 
 .skip {
-    color: $error;
+  color: $error;
 }
 
 .transport {
-    opacity: 0 !important;
+  opacity: 0 !important;
 }
 
 /* 限时模式样式 */
 .correct-card {
-    background-color: $active !important;
-    color: $btnText !important;
+  background-color: $active !important;
+  color: $btnText !important;
 }
 
 .wrong-card {
-    background-color: $error !important;
-    color: $btnText !important;
+  background-color: $error !important;
+  color: $btnText !important;
 }
-
 
 /* 滚动条轨道 */
 ::-webkit-scrollbar {
-    width: 8px;
+  width: 10px;
 }
-
-/* 滚动条轨道背景 */
-// ::-webkit-scrollbar-track {}
 
 /* 滚动条thumb（拖动条） */
 ::-webkit-scrollbar-thumb {
-    background: $active;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  background: $active;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-/* 滚动条thumb hover状态 */
-// ::-webkit-scrollbar-thumb:hover {}
+.os-scrollbar {
+  width: 15px !important;
+}
 
+.os-scrollbar-handle {
+  background-color: $active !important;
+}
 
 // 添加至quasar的brandColor
 .text-active {
-    color: $active !important;
+  color: $active !important;
 }
 
 .bg-active {
-    background: $active !important;
+  background: $active !important;
 }
 
 .text-error {
-    color: $error !important;
+  color: $error !important;
 }
 
 .bg-error {
-    background: $error !important;
+  background: $error !important;
 }
 
 .text-bg {
-    color: $bg !important;
+  color: $bg !important;
 }
 
 .bg-bg {
-    background: $bg !important;
+  background: $bg !important;
 }
 
 .text-btnText {
-    color: $btnText !important;
+  color: $btnText !important;
 }
 
 .bg-btnText {
-    background: $btnText !important;
+  background: $btnText !important;
 }
 
 .text-text {
-    color: $text !important;
+  color: $text !important;
 }
 
 .bg-text {
-    background: $text !important;
+  background: $text !important;
 }

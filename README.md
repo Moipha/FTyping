@@ -15,11 +15,15 @@
 
 ### 特点
 
-- `<b>`支持自定义词组`</b>`
-- `<b>`可定制主题颜色`</b>`
+- **支持自定义词组**
+- **可定制主题颜色**
 
 ### 开发环境
 
-- `<b>`Node.js 18.19.1 `</b>`
-- `<b>`@vue/cli 5.0.8 `</b>`
-- `<b>`@quasar/cli v2.3.0 `</b>`
+- Node.js 18.19.1
+- @vue/cli 5.0.8
+- @quasar/cli v2.3.0
+
+### 在线访问
+
+<a href='https://f-typing.top/' target='_blank'>https://f-typing.top/</a>

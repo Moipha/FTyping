@@ -1,7 +1,11 @@
 <template>
   <q-separator color="text" />
-  <q-splitter :horizontal="isPhone" v-model="splitterModel" separator-style="background-color: var(--q-text)"
-    style="height: calc(100vh - 170px)">
+  <q-splitter
+    :horizontal="isPhone"
+    v-model="splitterModel"
+    separator-style="background-color: var(--q-text)"
+    style="height: calc(100vh - 170px)"
+  >
     <!-- 左侧 -->
     <template v-slot:before>
       <SettingTree v-model="selected" />
@@ -12,16 +16,28 @@
     </template>
     <!-- 右侧 -->
     <template v-slot:after>
-      <q-tab-panels v-model="selected" animated transition-prev="slide-down" transition-next="slide-up"
-        transition-duration="500">
+      <q-tab-panels
+        v-model="selected"
+        animated
+        transition-prev="slide-down"
+        transition-next="slide-up"
+        transition-duration="500"
+      >
         <q-tab-panel name="通用">
           <GeneralSetting />
         </q-tab-panel>
 
         <q-tab-panel name="切换主题">
           <div class="q-px-xl q-py-md row q-gutter-lg">
-            <ThemeCard class="q-ma-md" v-for="(value, key) in themes" :key="key" :themeKey="key" :value="value" :current="current"
-              :changeTheme="changeTheme" />
+            <ThemeCard
+              class="q-ma-md"
+              v-for="(value, key) in themes"
+              :key="key"
+              :themeKey="key"
+              :value="value"
+              :current="current"
+              :changeTheme="changeTheme"
+            />
           </div>
         </q-tab-panel>
 
@@ -56,7 +72,6 @@ const splitterModel = ref(isPhone ? 30 : 20)
 
 // 当前选中树状图节点
 const selected = ref('通用')
-
 </script>
 
 <style lang="scss" scoped>
@@ -67,7 +82,7 @@ const selected = ref('通用')
 
 // 设置中的分割线
 .divider {
-  opacity: .3 !important;
+  opacity: 0.3 !important;
   height: 2px;
 }
 

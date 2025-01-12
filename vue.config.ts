@@ -4,9 +4,7 @@ export default defineConfig({
     quasar: {
       importStrategy: 'kebab',
       rtlSupport: false
-    },
+    }
   },
-  transpileDependencies: [
-    'quasar'
-  ],
+  transpileDependencies: ['quasar']
 })
