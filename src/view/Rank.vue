@@ -2,7 +2,6 @@
 import * as echarts from 'echarts'
 import { onMounted, ref } from 'vue'
 import { useDataStore } from '@/stores/useDataStore'
-import { DataFormatMixin } from 'echarts/types/src/model/mixin/dataFormat.js'
 import { getCssVar } from 'quasar'
 const { total_words, today_words, typing_records, average_wpm, average_accuracy, best_wpm } = useDataStore()
 
@@ -25,7 +24,7 @@ const columns = [
     name: 'mode',
     label: '打字模式 (计时/限时)',
     field: 'mode',
-    format: (val) => `${val === 'timed' ? '计时模式' : '限时模式'}`,
+    format: (val: any) => `${val === 'timed' ? '计时模式' : '限时模式'}`,
     sortable: true
   },
   { name: 'total_words', label: '键入词数 (个)', field: 'total_words', sortable: true },
@@ -33,14 +32,14 @@ const columns = [
     name: 'accuracy',
     label: '正确率 (%)',
     field: 'accuracy',
-    format: (val) => `${val}%`,
+    format: (val: any) => `${val}%`,
     sortable: true
   },
   {
     name: 'timestamp',
     label: '记录时间',
-    field: (row) => row.timestamp,
-    format: (val) => `${new Date(val).toLocaleString()}`,
+    field: (row: any) => row.timestamp,
+    format: (val: any) => `${new Date(val).toLocaleString()}`,
     sortable: true
   }
 ]
@@ -190,7 +189,7 @@ const renderChart = () => {
   }
 
   if (myPieChart) {
-    myPieChart.setOption(pieOption)
+    myPieChart.setOption(pieOption as any)
   }
 }
 </script>
@@ -236,7 +235,7 @@ const renderChart = () => {
           card-class="table"
           title="打字记录"
           :rows="typing_records"
-          :columns="columns"
+          :columns="columns as any"
           row-key="name"
         />
       </q-card>

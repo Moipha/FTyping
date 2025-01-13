@@ -68,5 +68,5 @@ export const useDataStore = defineStore(
         }
       ]
     }
-  }
+  } as any
 )
