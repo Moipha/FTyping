@@ -12,8 +12,9 @@
 
 - 描述：
 
-  * 如果元素的 class 列表中包含指定的类名，则该类名将被移除，并返回 `false`。
-  * 如果元素的 class 列表中不包含指定的类名，则该类名将被添加，并返回 `true`。
+  - 如果元素的 class 列表中包含指定的类名，则该类名将被移除，并返回 `false`。
+  - 如果元素的 class 列表中不包含指定的类名，则该类名将被添加，并返回 `true`。
+
 - 语法：`element.classList.toggle(className);`
 - 参数：
 
@@ -37,15 +38,14 @@
 
 ```typescript
 // 默认引入quasar提供的样式变量
-  css:{
-    preprocessorOptions: {
-      scss: { 
-        additionalData: '@import "@/assets/variables.scss";'
-      }
+css: {
+  preprocessorOptions: {
+    scss: {
+      additionalData: '@import "@/assets/variables.scss";'
     }
   }
+}
 ```
-
 
 # 2024/4/19
 
