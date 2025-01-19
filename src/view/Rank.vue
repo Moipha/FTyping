@@ -86,10 +86,20 @@ function getModeData() {
   ]
 }
 
+/**
+ * 关系图和分布图
+ */
+const scatterChart = ref(null)
+const barChart = ref(null)
+let myScatterChart: ECharts | null = null
+let myBarChart: ECharts | null = null
+
 onMounted(() => {
   if (wpmChart.value) {
     myWpmChart = echarts.init(wpmChart.value)
     myPieChart = echarts.init(pieChart.value)
+    myScatterChart = echarts.init(scatterChart.value)
+    myBarChart = echarts.init(barChart.value)
     renderChart()
   }
 })
@@ -184,6 +194,98 @@ const renderChart = () => {
     ]
   }
 
+  // 打字速度与正确率关系图
+  const scatterData = typing_records.map((record) => [record.accuracy, record.wpm])
+  const scatterOption = {
+    title: {
+      text: '打字速度与正确率关系图',
+      left: 'center',
+      top: 10
+    },
+    tooltip: {
+      trigger: 'axis',
+      formatter: (params: any) => {
+        const record = params[0].data
+        return `正确率: ${record[0]}%<br>打字速度: ${record[1]} WPM`
+      }
+    },
+    xAxis: {
+      name: '正确率 (%)',
+      type: 'value',
+      min: 0,
+      max: 100
+    },
+    yAxis: {
+      name: '打字速度 (WPM)',
+      type: 'value'
+    },
+    series: [
+      {
+        name: '打字记录',
+        type: 'scatter',
+        data: scatterData,
+        itemStyle: {
+          color: color_active
+        }
+      }
+    ]
+  }
+
+  // 打字成绩分布图
+  const wpmRanges = [
+    { range: '0-20', min: 0, max: 20 },
+    { range: '20-40', min: 20, max: 40 },
+    { range: '40-60', min: 40, max: 60 },
+    { range: '60-80', min: 60, max: 80 },
+    { range: '80+', min: 80, max: Infinity }
+  ]
+
+  const barData = wpmRanges.map((range) => ({
+    range: range.range,
+    count: typing_records.filter((record) => record.wpm >= range.min && record.wpm < range.max).length
+  }))
+
+  const barOption = {
+    title: {
+      text: '打字成绩分布图',
+      left: 'center',
+      top: 10
+    },
+    tooltip: {
+      trigger: 'axis',
+      formatter: (params: any) => {
+        const range = params[0].name
+        const count = params[0].value
+        return `${range}: ${count} 次`
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: barData.map((item) => item.range)
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [
+      {
+        name: '打字成绩分布',
+        type: 'bar',
+        data: barData.map((item) => item.count),
+        itemStyle: {
+          color: color_active
+        }
+      }
+    ]
+  }
+
+  if (myScatterChart) {
+    myScatterChart.setOption(scatterOption)
+  }
+
+  if (myBarChart) {
+    myBarChart.setOption(barOption)
+  }
+
   if (myWpmChart) {
     myWpmChart.setOption(option)
   }
@@ -195,49 +297,37 @@ const renderChart = () => {
 </script>
 
 <template>
-  <div class="container q-pa-lg">
+  <div class="container q-pa-lg column">
     <div class="top row">
-      <div class="top_cards row">
-        <q-card class="card shadow-hover">
-          <q-card-section class="column">
-            <span class="title">{{ total_words }}<span class="unit">个</span></span>
-            <span class="subtitle">总打字词数</span>
-          </q-card-section>
-        </q-card>
-        <q-card class="card shadow-hover">
-          <q-card-section class="column">
-            <span class="title">{{ today_words }}<span class="unit">个</span></span>
-            <span class="subtitle">今日打字词数</span>
-          </q-card-section>
-        </q-card>
-        <q-card class="card shadow-hover">
-          <q-card-section class="column">
-            <span class="title">{{ average_wpm }}<span class="unit">WPM</span></span>
-            <span class="subtitle">平均打字速度</span>
-          </q-card-section>
-        </q-card>
-        <q-card class="card shadow-hover">
-          <q-card-section class="column">
-            <span class="title">{{ average_accuracy }}<span class="unit">%</span></span>
-            <span class="subtitle">平均正确率</span>
-          </q-card-section>
-        </q-card>
-        <q-card class="card shadow-hover">
-          <q-card-section class="column">
-            <span class="title">{{ best_wpm }}<span class="unit">WPM</span></span>
-            <span class="subtitle">最佳记录</span>
-          </q-card-section>
-        </q-card>
-      </div>
-      <q-card class="table-card shadow-hover">
-        <q-table
-          :rows-per-page-options="[10, 20, 50, 0]"
-          card-class="table"
-          title="打字记录"
-          :rows="typing_records"
-          :columns="columns as any"
-          row-key="name"
-        />
+      <q-card class="card shadow-hover">
+        <q-card-section class="column">
+          <span class="title">{{ total_words }}<span class="unit">个</span></span>
+          <span class="subtitle">总打字词数</span>
+        </q-card-section>
+      </q-card>
+      <q-card class="card shadow-hover">
+        <q-card-section class="column">
+          <span class="title">{{ today_words }}<span class="unit">个</span></span>
+          <span class="subtitle">今日打字词数</span>
+        </q-card-section>
+      </q-card>
+      <q-card class="card shadow-hover">
+        <q-card-section class="column">
+          <span class="title">{{ average_wpm }}<span class="unit">WPM</span></span>
+          <span class="subtitle">平均打字速度</span>
+        </q-card-section>
+      </q-card>
+      <q-card class="card shadow-hover">
+        <q-card-section class="column">
+          <span class="title">{{ average_accuracy }}<span class="unit">%</span></span>
+          <span class="subtitle">平均正确率</span>
+        </q-card-section>
+      </q-card>
+      <q-card class="card shadow-hover">
+        <q-card-section class="column">
+          <span class="title">{{ best_wpm }}<span class="unit">WPM</span></span>
+          <span class="subtitle">最佳记录</span>
+        </q-card-section>
       </q-card>
     </div>
     <div class="row charts">
@@ -248,45 +338,65 @@ const renderChart = () => {
         <div ref="pieChart" class="wpm-chart"></div>
       </q-card>
     </div>
+    <!-- 关系图和分布图 -->
+    <div class="row charts">
+      <q-card class="wpm-card shadow-hover">
+        <div ref="scatterChart" class="wpm-chart"></div>
+      </q-card>
+      <q-card class="wpm-card shadow-hover">
+        <div ref="barChart" class="wpm-chart"></div>
+      </q-card>
+    </div>
+
+    <q-card class="table-card shadow-hover">
+      <q-table
+        :rows-per-page-options="[10, 20, 50, 0]"
+        card-class="table"
+        title="打字记录"
+        :rows="typing_records"
+        :columns="columns as any"
+        row-key="name"
+      />
+    </q-card>
   </div>
 </template>
 
 <style lang="scss" scoped>
 .container {
+  gap: 10vh;
+
   .top {
     flex-wrap: nowrap;
-    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
 
-    .top_cards {
-      gap: 20px;
-      flex-wrap: wrap;
+    .card {
+      min-width: 200px;
+      width: 17vw;
+      height: 150px;
+      border-radius: 20px;
 
-      .card {
-        width: 200px;
-        height: 120px;
-        border-radius: 20px;
+      background-color: $bg;
+      color: $text;
+      // background-color: $active;
+      // color: $btnText;
 
-        background-color: $bg;
-        color: $text;
-        // background-color: $active;
-        // color: $btnText;
+      .column {
+        justify-content: center;
+        align-items: center;
+        height: 100%;
 
-        .column {
-          justify-content: center;
-          align-items: center;
-          height: 100%;
-
-          .title {
-            font-size: 30px;
-            font-weight: bold;
-          }
-          .subtitle {
-            font-size: 14px;
-          }
-          .unit {
-            font-size: 16px;
-            margin-left: 10px;
-          }
+        .title {
+          font-size: 30px;
+          font-weight: bold;
+        }
+        .subtitle {
+          font-size: 14px;
+        }
+        .unit {
+          font-size: 16px;
+          margin-left: 10px;
         }
       }
     }
@@ -295,7 +405,7 @@ const renderChart = () => {
   .table-card {
     align-items: flex-start;
     border-radius: 20px;
-    width: 70%;
+    width: 100%;
 
     .table {
       background-color: $bg;
@@ -319,10 +429,9 @@ const renderChart = () => {
 
   .charts {
     justify-content: space-between;
-    margin-top: 10vh;
 
     .wpm-card {
-      width: 40%;
+      width: 47.5%;
       border-radius: 20px;
       background-color: $bg;
       color: $text;
